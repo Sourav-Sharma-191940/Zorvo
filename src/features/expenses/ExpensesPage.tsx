@@ -18,9 +18,9 @@ import {
   WalletCards,
 } from "lucide-react";
 import "./expenses.css";
-import { Button } from "@/components/ui/primitives";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { exportCsv } from "@/lib/export-csv";
+import { Button } from "@/shared/ui/primitives";
+import { PageHeader } from "@/shared/ui/PageHeader";
+import { exportCsv } from "@/shared/lib/export-csv";
 import { categoryBreakdown, formatCurrency, periods, type Transaction } from "./data";
 import {
   useCreateTransaction,
@@ -28,11 +28,11 @@ import {
   useDuplicateTransaction,
   useTransactions,
 } from "./hooks";
-import { StatCard } from "@/components/ui/StatCard";
-import { Select } from "@/components/ui/Select";
-import { Toast, useToast } from "@/components/ui/Toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { ActionMenu } from "@/components/ui/ActionMenu";
+import { StatCard } from "@/shared/ui/StatCard";
+import { Select } from "@/shared/ui/Select";
+import { Toast, useToast } from "@/shared/ui/Toast";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { ActionMenu } from "@/shared/ui/ActionMenu";
 import { TrendChart } from "./components/TrendChart";
 import { AddTransactionModal } from "./components/AddTransactionModal";
 import { TransactionDrawer } from "./components/TransactionDrawer";

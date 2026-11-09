@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import {} from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import { FormModal } from "@/components/ui/FormModal";
+import { Button } from "@/shared/ui/primitives";
+import { FormModal } from "@/shared/ui/FormModal";
 import type { NewLoan } from "../api";
 import { loanTypes } from "../data";
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { Monitor, Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import type { ThemePreference } from "@/lib/theme";
+import { Button } from "@/shared/ui/primitives";
+import type { ThemePreference } from "@/shared/theme/constants";
 import { useTheme } from "./ThemeProvider";
 
 const ORDER: ThemePreference[] = ["system", "light", "dark"];

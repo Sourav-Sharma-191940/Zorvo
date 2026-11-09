@@ -1,4 +1,4 @@
-import { ExpensesPage } from "@/features/expenses/ExpensesPage";
+import { ExpensesPage } from "@/features/expenses";
 
 export default function Expenses() {
   return <ExpensesPage />;

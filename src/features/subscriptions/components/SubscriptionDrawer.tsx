@@ -10,9 +10,9 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import { DetailsDrawer, type DetailItem } from "@/components/ui/DetailsDrawer";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Button } from "@/shared/ui/primitives";
+import { DetailsDrawer, type DetailItem } from "@/shared/ui/DetailsDrawer";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
 import { formatCurrency, type Subscription } from "../data";
 import { ServiceLogo } from "./ServiceLogo";
 

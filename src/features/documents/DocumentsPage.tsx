@@ -21,16 +21,16 @@ import {
   Upload,
 } from "lucide-react";
 import "./documents.css";
-import { Button } from "@/components/ui/primitives";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { exportCsv } from "@/lib/export-csv";
+import { Button } from "@/shared/ui/primitives";
+import { PageHeader } from "@/shared/ui/PageHeader";
+import { exportCsv } from "@/shared/lib/export-csv";
 import { documentCategories, type DocumentRecord } from "./data";
 import { useDeleteDocument, useDocuments } from "./hooks";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { StatCard } from "@/components/ui/StatCard";
-import { ActionMenu } from "@/components/ui/ActionMenu";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
+import { StatCard } from "@/shared/ui/StatCard";
+import { ActionMenu } from "@/shared/ui/ActionMenu";
 import { DocumentDrawer } from "./components/DocumentDrawer";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { UploadModal } from "./components/UploadModal";
 
 function SelectButton({ label }: { label: string }) {

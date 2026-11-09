@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import { FormModal } from "@/components/ui/FormModal";
+import { Button } from "@/shared/ui/primitives";
+import { FormModal } from "@/shared/ui/FormModal";
 import type { NewTransaction } from "../api";
 import { expenseCategories, incomeCategories, paymentMethods, type TransactionType } from "../data";
 

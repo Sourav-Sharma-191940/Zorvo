@@ -14,16 +14,16 @@ import {
   WalletCards,
 } from "lucide-react";
 import "./loans.css";
-import { Button } from "@/components/ui/primitives";
-import { PageHeader, CardHeader } from "@/components/ui/PageHeader";
-import { exportCsv } from "@/lib/export-csv";
+import { Button } from "@/shared/ui/primitives";
+import { PageHeader, CardHeader } from "@/shared/ui/PageHeader";
+import { exportCsv } from "@/shared/lib/export-csv";
 import { formatCurrency, loanTypes, type Loan } from "./data";
 import { useCreateLoan, useDeleteLoan, useLoans } from "./hooks";
-import { Select } from "@/components/ui/Select";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Toast, useToast } from "@/components/ui/Toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { StatCard } from "@/components/ui/StatCard";
+import { Select } from "@/shared/ui/Select";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
+import { Toast, useToast } from "@/shared/ui/Toast";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { StatCard } from "@/shared/ui/StatCard";
 import { ProgressBar } from "./components/ProgressBar";
 import { AddLoanModal } from "./components/AddLoanModal";
 import { RepaymentModal } from "./components/RepaymentModal";

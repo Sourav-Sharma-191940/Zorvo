@@ -15,8 +15,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import "./dashboard.css";
-import { Badge, Button, Card, SectionHeader, type Tone } from "@/components/ui/primitives";
-import { currentUser } from "@/lib/nav";
+import { Badge, Button, Card, SectionHeader, type Tone } from "@/shared/ui/primitives";
+import { currentUser } from "@/shared/config/nav";
 import { SummaryCard } from "./components/SummaryCard";
 import { SpendingChart } from "./components/SpendingChart";
 

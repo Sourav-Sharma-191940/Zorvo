@@ -1,5 +1,5 @@
 import { Clock3, TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
-import { Card, type Tone } from "@/components/ui/primitives";
+import { Card, type Tone } from "@/shared/ui/primitives";
 
 export function SummaryCard({
   icon: Icon,

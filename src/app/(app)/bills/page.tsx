@@ -1,4 +1,4 @@
-import { ComingSoon } from "@/components/shell/ComingSoon";
+import { ComingSoon } from "@/shared/layout/ComingSoon";
 
 export default function Bills() {
   return (

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { currentUser, navItems, settingsNav } from "@/lib/nav";
+import { currentUser, navItems, settingsNav } from "@/shared/config/nav";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";

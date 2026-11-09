@@ -3,7 +3,7 @@ import {
   THEME_STORAGE_KEY,
   type Theme,
   type ThemePreference,
-} from "@/lib/theme";
+} from "@/shared/theme/constants";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 

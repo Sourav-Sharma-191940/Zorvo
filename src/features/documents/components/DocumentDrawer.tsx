@@ -1,9 +1,9 @@
 "use client";
 
 import { Download, Eye, FileText, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import { DetailsDrawer } from "@/components/ui/DetailsDrawer";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Button } from "@/shared/ui/primitives";
+import { DetailsDrawer } from "@/shared/ui/DetailsDrawer";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
 import type { DocumentRecord } from "../data";
 
 export function DocumentDrawer({

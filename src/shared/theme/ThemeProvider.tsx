@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
-import { DEFAULT_THEME_PREFERENCE, type ThemePreference } from "@/lib/theme";
+import { DEFAULT_THEME_PREFERENCE, type ThemePreference } from "@/shared/theme/constants";
 import {
   applyTheme,
   readSystemPrefersDark,
@@ -9,7 +9,7 @@ import {
   resolveTheme,
   subscribeTheme,
   writeThemePreference,
-} from "./theme";
+} from "./runtime";
 
 /**
  * Keeps <html data-theme> in sync with the stored preference and the OS

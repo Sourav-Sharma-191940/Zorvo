@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowDownRight, ArrowUpRight, Copy, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import { DetailsDrawer } from "@/components/ui/DetailsDrawer";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Button } from "@/shared/ui/primitives";
+import { DetailsDrawer } from "@/shared/ui/DetailsDrawer";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
 import { formatCurrency, type Transaction } from "../data";
 
 export function TransactionDrawer({

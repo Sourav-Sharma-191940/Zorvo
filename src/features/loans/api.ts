@@ -1,4 +1,4 @@
-import { isBackendConfigured, request } from "@/lib/api/client";
+import { isBackendConfigured, request } from "@/shared/lib/api/client";
 import { loanFixtures, scheduleFixture, type Loan, type ScheduleEntry } from "./data";
 
 /**

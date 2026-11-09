@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { FileClock } from "lucide-react";
-import { FormModal } from "@/components/ui/FormModal";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { FormModal } from "@/shared/ui/FormModal";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
 import { formatCurrency, type Loan } from "../data";
 import { useLoanSchedule } from "../hooks";
 

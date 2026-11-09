@@ -2,8 +2,8 @@
 
 import { useRef, useState, type DragEvent } from "react";
 import { CheckCircle2, CircleAlert, FileUp, Upload } from "lucide-react";
-import { Button } from "@/components/ui/primitives";
-import { FormModal } from "@/components/ui/FormModal";
+import { Button } from "@/shared/ui/primitives";
+import { FormModal } from "@/shared/ui/FormModal";
 import { documentCategories } from "../data";
 
 type UploadPhase = "form" | "uploading" | "success" | "error";

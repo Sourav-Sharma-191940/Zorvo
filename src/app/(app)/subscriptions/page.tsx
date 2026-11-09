@@ -1,4 +1,4 @@
-import { SubscriptionsPage } from "@/features/subscriptions/SubscriptionsPage";
+import { SubscriptionsPage } from "@/features/subscriptions";
 
 export default function Subscriptions() {
   return <SubscriptionsPage />;

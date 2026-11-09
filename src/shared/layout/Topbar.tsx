@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, Clock3, FileText, Plus, Search } from "lucide-react";
-import { currentUser, navItems, settingsNav } from "@/lib/nav";
-import { Badge, Button } from "@/components/ui/primitives";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { currentUser, navItems, settingsNav } from "@/shared/config/nav";
+import { Badge, Button } from "@/shared/ui/primitives";
+import { ThemeToggle } from "@/shared/theme/ThemeToggle";
 import { QuickAddModal } from "./QuickAddModal";
 
 function usePageTitle(pathname: string): string {

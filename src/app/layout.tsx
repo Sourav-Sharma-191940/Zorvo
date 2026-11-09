@@ -3,10 +3,10 @@ import { Inter } from "next/font/google";
 // Design tokens must load first: every other stylesheet reads from them.
 import "@/styles/tokens.css";
 import "./globals.css";
-import { QueryProvider } from "@/lib/api/query-client";
-import { ThemeSync } from "@/components/theme/ThemeProvider";
-import { themeInitScript } from "@/components/theme/theme";
-import { THEME_BROWSER_COLOR } from "@/lib/theme";
+import { QueryProvider } from "@/shared/lib/api/query-client";
+import { ThemeSync } from "@/shared/theme/ThemeProvider";
+import { themeInitScript } from "@/shared/theme/runtime";
+import { THEME_BROWSER_COLOR } from "@/shared/theme/constants";
 
 const inter = Inter({
   variable: "--font-inter",
