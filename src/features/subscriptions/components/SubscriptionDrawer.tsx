@@ -10,7 +10,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { Button } from "@/shared/ui/primitives";
+import { Badge, Button, Overline } from "@/shared/ui/primitives";
 import { DetailsDrawer, type DetailItem } from "@/shared/ui/DetailsDrawer";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
 import { formatCurrency, type Subscription } from "../data";
@@ -44,7 +44,7 @@ export function SubscriptionDrawer({
     details.push({
       label: "Website",
       value: (
-        <span className="website-value">
+        <span className="inline-flex items-center gap-1.25 text-primary">
           {item.website}
           <ExternalLink size="0.75rem" />
         </span>
@@ -55,13 +55,12 @@ export function SubscriptionDrawer({
   return (
     <DetailsDrawer
       label={`${item.name} details`}
-      className="subscription-drawer"
-      icon={<ServiceLogo item={item} />}
+      icon={<ServiceLogo item={item} large />}
       title={item.name}
       subtitle={item.plan}
       badges={
         <>
-          <span className="badge badge-slate">{item.category}</span>
+          <Badge tone="slate" shape="rounded">{item.category}</Badge>
           <StatusBadge status={item.status} />
         </>
       }
@@ -84,26 +83,29 @@ export function SubscriptionDrawer({
             {paused ? <CirclePlay size="0.9375rem" /> : <CirclePause size="0.9375rem" />}
             {paused ? "Resume" : "Pause"}
           </Button>
-          <Button variant="ghost" className="danger-text" onClick={onCancel}>
+          <Button variant="danger-ghost" onClick={onCancel}>
             <X size="0.9375rem" />
             Cancel subscription
           </Button>
-          <Button variant="ghost" className="danger-text" onClick={onDelete}>
+          <Button variant="danger-ghost" onClick={onDelete}>
             <Trash2 size="0.9375rem" />
             Delete
           </Button>
         </>
       }
     >
-      <div className="subscription-price-panel">
-        <span>Current subscription</span>
-        <strong>
-          {formatCurrency(item.amount)} <small>/ {item.frequency.toLowerCase()}</small>
+      <div className="mt-4.5 flex flex-col gap-1.5 rounded-md bg-muted p-3.75">
+        <Overline>Current subscription</Overline>
+        <strong className="text-4xl tracking-tight">
+          {formatCurrency(item.amount)}{" "}
+          <small className="text-sm font-medium tracking-normal text-subtle-foreground">
+            / {item.frequency.toLowerCase()}
+          </small>
         </strong>
-        <div>
+        <div className="flex items-center gap-1.75 text-2xs text-muted-foreground">
           <CalendarClock size="0.9375rem" />
           <span>
-            Renews on <b>{item.renewal}</b>
+            Renews on <b className="text-foreground">{item.renewal}</b>
           </span>
         </div>
       </div>

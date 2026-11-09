@@ -1,9 +1,19 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import {} from "lucide-react";
 import { Button } from "@/shared/ui/primitives";
 import { FormModal } from "@/shared/ui/FormModal";
+import { DialogFooter } from "@/shared/ui/dialog";
+import {
+  AffixInput,
+  CheckTile,
+  Field,
+  FormGrid,
+  FormRow,
+  FormSelect,
+  Input,
+  Textarea,
+} from "@/shared/ui/form";
 import {
   subscriptionCategories,
   type BillingFrequency,
@@ -100,26 +110,19 @@ export function SubscriptionForm({
       onSubmit={submit}
       onClose={onClose}
     >
-      <div className="form-grid">
-        <label>
-          <span>
-            Subscription name <b>*</b>
-          </span>
-          <input
-            className={invalid("name") ? "field-error" : ""}
+      <FormGrid>
+        <Field label="Subscription name" required error={invalid("name") && "Enter a subscription name."}>
+          <Input
+            invalid={invalid("name")}
             value={values.name}
             onChange={(event) => set("name", event.target.value)}
             placeholder="e.g. Netflix"
           />
-          {invalid("name") && <em>Enter a subscription name.</em>}
-        </label>
-        <div className="form-row">
-          <label>
-            <span>
-              Category <b>*</b>
-            </span>
-            <select
-              className={invalid("category") ? "field-error" : ""}
+        </Field>
+        <FormRow>
+          <Field label="Category" required>
+            <FormSelect
+              invalid={invalid("category")}
               value={values.category}
               onChange={(event) => set("category", event.target.value)}
             >
@@ -127,41 +130,31 @@ export function SubscriptionForm({
               {subscriptionCategories.map((category) => (
                 <option key={category}>{category}</option>
               ))}
-            </select>
-          </label>
-          <label>
-            <span>
-              Plan name <small>Optional</small>
-            </span>
-            <input
+            </FormSelect>
+          </Field>
+          <Field label="Plan name" optional>
+            <Input
               value={values.plan}
               onChange={(event) => set("plan", event.target.value)}
               placeholder="e.g. Premium"
             />
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Amount in INR <b>*</b>
-            </span>
-            <div className={`currency-input ${invalid("amount") ? "field-error" : ""}`.trim()}>
-              <span>₹</span>
-              <input
-                type="number"
-                min="1"
-                value={values.amount}
-                onChange={(event) => set("amount", event.target.value)}
-                placeholder="0.00"
-              />
-            </div>
-          </label>
-          <label>
-            <span>
-              Billing frequency <b>*</b>
-            </span>
-            <select
-              className={invalid("frequency") ? "field-error" : ""}
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Amount in INR" required>
+            <AffixInput
+              prefix="₹"
+              type="number"
+              min="1"
+              invalid={invalid("amount")}
+              value={values.amount}
+              onChange={(event) => set("amount", event.target.value)}
+              placeholder="0.00"
+            />
+          </Field>
+          <Field label="Billing frequency" required>
+            <FormSelect
+              invalid={invalid("frequency")}
               value={values.frequency}
               onChange={(event) => set("frequency", event.target.value)}
             >
@@ -170,99 +163,75 @@ export function SubscriptionForm({
               <option>Monthly</option>
               <option>Quarterly</option>
               <option>Yearly</option>
-            </select>
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Start date <b>*</b>
-            </span>
-            <input
-              className={invalid("start") ? "field-error" : ""}
+            </FormSelect>
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Start date" required>
+            <Input
+              invalid={invalid("start")}
               type={values.start.includes("-") || !values.start ? "date" : "text"}
               value={values.start}
               onChange={(event) => set("start", event.target.value)}
             />
-          </label>
-          <label>
-            <span>
-              Next renewal date <b>*</b>
-            </span>
-            <input
-              className={invalid("renewal") ? "field-error" : ""}
+          </Field>
+          <Field label="Next renewal date" required>
+            <Input
+              invalid={invalid("renewal")}
               type="date"
               value={values.renewal}
               onChange={(event) => set("renewal", event.target.value)}
             />
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Status <b>*</b>
-            </span>
-            <select value={values.status} onChange={(event) => set("status", event.target.value)}>
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Status" required>
+            <FormSelect value={values.status} onChange={(event) => set("status", event.target.value)}>
               <option>Active</option>
               <option>Trial</option>
               <option>Paused</option>
               <option>Cancelled</option>
               <option>Expiring soon</option>
-            </select>
-          </label>
-          <label>
-            <span>
-              Payment method <small>Optional</small>
-            </span>
-            <select value={values.payment} onChange={(event) => set("payment", event.target.value)}>
+            </FormSelect>
+          </Field>
+          <Field label="Payment method" optional>
+            <FormSelect value={values.payment} onChange={(event) => set("payment", event.target.value)}>
               <option value="">Select method</option>
               <option>UPI</option>
               <option>Credit Card</option>
               <option>Debit Card</option>
               <option>Bank Transfer</option>
               <option>Other</option>
-            </select>
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Payment account <small>Optional</small>
-            </span>
-            <select value={values.account} onChange={(event) => set("account", event.target.value)}>
+            </FormSelect>
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Payment account" optional>
+            <FormSelect value={values.account} onChange={(event) => set("account", event.target.value)}>
               <option value="">Select account</option>
               <option>HDFC Regalia • 4821</option>
               <option>Axis Ace • 3390</option>
               <option>ICICI Debit • 1074</option>
               <option>Google Pay • sourav@okhdfcbank</option>
-            </select>
-          </label>
-          <label>
-            <span>
-              Website or service URL <small>Optional</small>
-            </span>
-            <input
+            </FormSelect>
+          </Field>
+          <Field label="Website or service URL" optional>
+            <Input
               value={values.website}
               onChange={(event) => set("website", event.target.value)}
               placeholder="service.com"
             />
-          </label>
-        </div>
-        <div className="form-row">
-          <label className="check-tile">
-            <input
-              type="checkbox"
-              checked={values.reminder}
-              onChange={(event) => set("reminder", event.target.checked)}
-            />
-            <span>
-              <strong>Renewal reminder</strong>
-              <small>Notify me before this payment renews.</small>
-            </span>
-          </label>
-          <label>
-            <span>Reminder timing</span>
-            <select
+          </Field>
+        </FormRow>
+        <FormRow>
+          <CheckTile
+            title="Renewal reminder"
+            description="Notify me before this payment renews."
+            checked={values.reminder}
+            onChange={(checked) => set("reminder", checked)}
+          />
+          <Field label="Reminder timing">
+            <FormSelect
               value={values.reminderTiming}
               disabled={!values.reminder}
               onChange={(event) => set("reminderTiming", event.target.value)}
@@ -271,30 +240,27 @@ export function SubscriptionForm({
               <option>3 days before</option>
               <option>7 days before</option>
               <option>30 days before</option>
-            </select>
-          </label>
-        </div>
-        <label>
-          <span>
-            Notes <small>Optional</small>
-          </span>
-          <textarea
-            rows={3}
+            </FormSelect>
+          </Field>
+        </FormRow>
+        <Field
+          label="Notes"
+          optional
+          error={submitted && required.some((key) => !values[key]) && "Complete all required fields before saving."}
+        >
+          <Textarea
             value={values.notes}
             onChange={(event) => set("notes", event.target.value)}
             placeholder="Add any helpful context..."
           />
-          {submitted && required.some((key) => !values[key]) && (
-            <em>Complete all required fields before saving.</em>
-          )}
-        </label>
-      </div>
-      <div className="form-modal-footer">
+        </Field>
+      </FormGrid>
+      <DialogFooter>
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
         <Button type="submit">{item ? "Save changes" : "Save subscription"}</Button>
-      </div>
+      </DialogFooter>
     </FormModal>
   );
 }
