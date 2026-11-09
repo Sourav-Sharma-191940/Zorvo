@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Clock3, CreditCard, FileText, ReceiptText, X, type LucideIcon } from "lucide-react";
+import { Clock3, CreditCard, FileText, ReceiptText, type LucideIcon } from "lucide-react";
+import { IconTile } from "@/shared/ui/primitives";
+import { Dialog, DialogContent, DialogHeader } from "@/shared/ui/dialog";
 
 const quickAddItems: { icon: LucideIcon; title: string; text: string }[] = [
   { icon: ReceiptText, title: "Expense", text: "Record a new purchase" },
@@ -11,57 +12,28 @@ const quickAddItems: { icon: LucideIcon; title: string; text: string }[] = [
 ];
 
 export function QuickAddModal({ onClose }: { onClose: () => void }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    closeRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [onClose]);
-
   return (
-    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
-      <div
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="quick-add-title"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <div className="modal-header">
-          <div>
-            <div className="modal-title" id="quick-add-title">
-              Quick add
-            </div>
-            <div className="section-subtitle">What would you like to capture?</div>
-          </div>
-          <button
-            ref={closeRef}
-            type="button"
-            className="button button-icon"
-            aria-label="Close dialog"
-            onClick={onClose}
-          >
-            <X size="1.1875rem" />
-          </button>
-        </div>
-        <div className="quick-grid">
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-125">
+        <DialogHeader title="Quick add" subtitle="What would you like to capture?" />
+        <div className="grid grid-cols-1 gap-2.25 sm:grid-cols-2">
           {quickAddItems.map(({ icon: Icon, title, text }) => (
-            <button type="button" className="quick-item" key={title}>
-              <span className="icon-tile icon-indigo">
+            <button
+              type="button"
+              key={title}
+              className="flex items-center gap-2.75 rounded-lg border border-border bg-card p-3.25 text-left transition hover:-translate-y-px hover:border-primary-muted hover:bg-primary-soft"
+            >
+              <IconTile>
                 <Icon size="1.1875rem" />
-              </span>
-              <span>
-                <strong>{title}</strong>
-                <small>{text}</small>
+              </IconTile>
+              <span className="flex flex-col gap-0.75">
+                <strong className="text-sm">{title}</strong>
+                <small className="text-2xs text-subtle-foreground">{text}</small>
               </span>
             </button>
           ))}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

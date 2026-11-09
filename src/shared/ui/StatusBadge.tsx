@@ -1,4 +1,4 @@
-import type { Tone } from "./primitives";
+import { Badge, type Tone } from "./primitives";
 
 /**
  * Single source of truth for how a status label is coloured across the app.
@@ -38,9 +38,9 @@ export function StatusBadge({
   dot?: boolean;
 }) {
   return (
-    <span className={`badge badge-${tone ?? toneForStatus(status)}`}>
-      {dot && <span className="mini-status-dot" />}
+    <Badge tone={tone ?? toneForStatus(status)}>
+      {dot && <span aria-hidden className="size-1.25 rounded-full bg-current" />}
       {status}
-    </span>
+    </Badge>
   );
 }

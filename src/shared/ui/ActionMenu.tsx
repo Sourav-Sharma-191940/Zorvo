@@ -1,123 +1,64 @@
 "use client";
 
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { Fragment } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreHorizontal, type LucideIcon } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 
 export interface ActionMenuItem {
   label: string;
   icon: LucideIcon;
   onSelect: () => void;
-  /** Destructive items render in rose and are separated by a divider. */
+  /** Destructive items render in red and are separated by a divider. */
   danger?: boolean;
 }
 
-const MENU_WIDTH = 176;
-const GAP = 6;
-const EDGE = 8;
-
 /**
- * Row "..." menu. The menu is portalled to <body> with fixed positioning so it
- * can never be clipped by a scrolling table container, and it flips upward when
- * there is not enough room below the trigger.
+ * Row "..." menu, built on Radix: rendered in a portal (never clipped by a
+ * scrolling table), flips to stay on screen, and has full keyboard support
+ * (arrows, Home/End, typeahead, Escape) with focus returned to the trigger.
  */
 export function ActionMenu({ label, items }: { label: string; items: ActionMenuItem[] }) {
-  const [open, setOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Position before paint, writing styles directly to avoid a second render.
-  useLayoutEffect(() => {
-    const trigger = triggerRef.current;
-    const menu = menuRef.current;
-    if (!open || !trigger || !menu) return;
-    const rect = trigger.getBoundingClientRect();
-    const height = menu.offsetHeight;
-    const fitsBelow = window.innerHeight - rect.bottom >= height + GAP + EDGE;
-    const top = fitsBelow || rect.top < height + GAP ? rect.bottom + GAP : rect.top - height - GAP;
-    const left = Math.min(
-      Math.max(EDGE, rect.right - MENU_WIDTH),
-      window.innerWidth - MENU_WIDTH - EDGE,
-    );
-    menu.style.top = `${top}px`;
-    menu.style.left = `${left}px`;
-  }, [open]);
-
-  // Close on outside click, Escape, scroll, or resize.
-  useEffect(() => {
-    if (!open) return;
-    const close = () => setOpen(false);
-    const onPointerDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (menuRef.current?.contains(target) || triggerRef.current?.contains(target)) return;
-      close();
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      close();
-      triggerRef.current?.focus();
-    };
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    window.addEventListener("resize", close);
-    window.addEventListener("scroll", close, true);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("resize", close);
-      window.removeEventListener("scroll", close, true);
-    };
-  }, [open]);
-
   return (
-    <>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="row-action"
+    <DropdownMenu.Root modal={false}>
+      <DropdownMenu.Trigger
         aria-label={label}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={(event) => {
-          event.stopPropagation();
-          setOpen((value) => !value);
-        }}
+        // The menu usually sits inside a clickable table row.
+        onClick={(event) => event.stopPropagation()}
+        className="grid size-7.5 place-items-center rounded-sm text-subtle-foreground transition outline-none hover:bg-secondary hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring data-[state=open]:bg-secondary data-[state=open]:text-foreground max-sm:size-10"
       >
         <MoreHorizontal size="1.125rem" />
-      </button>
-      {open &&
-        createPortal(
-          // React events bubble through portals, so stop clicks reaching the row.
-          <div
-            ref={menuRef}
-            className="ui-menu"
-            role="menu"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {items.map((item, index) => {
-              const Icon = item.icon;
-              const needsDivider = item.danger && index > 0 && !items[index - 1].danger;
-              return (
-                <Fragment key={item.label}>
-                  {needsDivider && <div className="menu-divider" />}
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={item.danger ? "danger-action" : undefined}
-                    onClick={() => {
-                      setOpen(false);
-                      item.onSelect();
-                    }}
-                  >
-                    <Icon size="0.875rem" />
-                    {item.label}
-                  </button>
-                </Fragment>
-              );
-            })}
-          </div>,
-          document.body,
-        )}
-    </>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={6}
+          collisionPadding={8}
+          // React events bubble through portals; keep clicks from reaching the row.
+          onClick={(event) => event.stopPropagation()}
+          className="z-(--z-menu) w-44 rounded-md border border-border bg-popover p-1.25 text-popover-foreground shadow-menu data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1"
+        >
+          {items.map((item, index) => {
+            const Icon = item.icon;
+            const needsDivider = item.danger && index > 0 && !items[index - 1].danger;
+            return (
+              <Fragment key={item.label}>
+                {needsDivider && <DropdownMenu.Separator className="-mx-1.25 my-1 h-px bg-border" />}
+                <DropdownMenu.Item
+                  onSelect={item.onSelect}
+                  className={cn(
+                    "flex h-7.75 cursor-pointer items-center gap-2 rounded-xs px-2.25 text-2xs text-muted-foreground outline-none select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground max-sm:h-10",
+                    item.danger && "text-destructive data-highlighted:text-destructive",
+                  )}
+                >
+                  <Icon size="0.875rem" />
+                  {item.label}
+                </DropdownMenu.Item>
+              </Fragment>
+            );
+          })}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
