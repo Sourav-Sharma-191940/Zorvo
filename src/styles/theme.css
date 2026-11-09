@@ -1,0 +1,246 @@
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ *  THEME — the single source of truth for how the whole product looks.
+ *
+ *  Edit a value here and every page, component and Tailwind class follows:
+ *    colours ......... "Light theme" / "Dark theme" blocks
+ *    primary colour .. --primary* variables
+ *    font ............ --font-family-sans
+ *    text sizes ...... --fs-* (desktop) and the "Phones" block
+ *    headings ........ src/app/globals.css → @layer base
+ *    corners/shadows . --r-*, --elev-*
+ *    screen sizes .... --breakpoint-* in src/app/globals.css (+ src/shared/theme/constants.ts)
+ *
+ *  How it reaches Tailwind: src/app/globals.css maps these variables onto
+ *  Tailwind's theme (@theme inline), so `bg-primary`, `text-muted-foreground`,
+ *  `text-sm`, `rounded-md`, `shadow-card`… all read from this file and switch
+ *  automatically between light and dark. Tailwind's default palette and sizes
+ *  are disabled there, so nothing can bypass this file.
+ *
+ *  Sizing: everything is rem. The fluid root below scales the whole UI up on
+ *  large monitors (16px ≤1280px wide → 20px at 2560px). Phones keep a 16px root
+ *  and get a larger, more readable type scale instead.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+html { font-size: clamp(16px, 12px + 0.3125vw, 20px); }
+
+:root {
+  /* ── Typography ──────────────────────────────────────────────────────────── */
+  --font-family-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-family-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Type scale (desktop; compact dashboard density). */
+  --fs-3xs: 0.5rem;     /*  8px — micro captions */
+  --fs-2xs: 0.5625rem;  /*  9px — meta text, badges, table headers */
+  --fs-xs: 0.625rem;    /* 10px — table/list/drawer body */
+  --fs-sm: 0.6875rem;   /* 11px — emphasized list text */
+  --fs-md: 0.75rem;     /* 12px — buttons, page subtitles */
+  --fs-base: 0.8125rem; /* 13px — nav items, card headings (h3) */
+  --fs-lg: 0.875rem;    /* 14px — brand, small titles */
+  --fs-xl: 0.9375rem;   /* 15px — confirm titles (h4) */
+  --fs-2xl: 1.0625rem;  /* 17px — top bar / modal titles */
+  --fs-3xl: 1.25rem;    /* 20px — drawer titles, amounts (h2) */
+  --fs-4xl: 1.375rem;   /* 22px — KPI values */
+  --fs-5xl: 1.5625rem;  /* 25px — page titles (h1) */
+  --fs-input: var(--fs-xs); /* form controls (16px on phones: no iOS zoom) */
+
+  /* ── Shape ───────────────────────────────────────────────────────────────── */
+  --r-xs: 0.375rem;  /*  6px */
+  --r-sm: 0.5rem;    /*  8px */
+  --r-md: 0.625rem;  /* 10px */
+  --r-lg: 0.75rem;   /* 12px */
+  --r-xl: 1rem;      /* 16px */
+
+  /* ── Layering (use as z-(--z-modal)) ─────────────────────────────────────── */
+  --z-topbar: 15;
+  --z-sidebar: 20;
+  --z-dropdown: 30;
+  --z-drawer: 45;
+  --z-modal: 50;
+  --z-menu: 60;
+  --z-toast: 70;
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+  --sidebar-width: 15.5rem;
+  --sidebar-width-collapsed: 4.75rem;
+  --topbar-height: 4.5rem;
+  --content-max-width: 96rem;
+  --page-gap: 1rem;
+}
+
+/* ── Light theme (default) ───────────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --background: #f7f8fb;          /* page */
+  --foreground: #18202f;          /* main text */
+  --card: #ffffff;                /* cards, panels, inputs */
+  --card-foreground: #18202f;
+  --popover: #ffffff;             /* menus, dialogs */
+  --popover-foreground: #18202f;
+  --muted: #fafbfc;               /* subtle panels, table headers, hover rows */
+  --muted-foreground: #667085;    /* secondary text */
+  --subtle-foreground: #98a2b3;   /* tertiary text, captions, icons */
+  --border: #e7e9ef;
+  --border-strong: #d8dce5;
+  --input: #e7e9ef;
+
+  /* Primary brand colour — change these to re-brand the product */
+  --primary: #4b4abd;
+  --primary-foreground: #ffffff;
+  --primary-hover: #3e3d9f;
+  --primary-strong: #3e3d9f;      /* primary text on soft backgrounds */
+  --primary-accent: #5b5bd6;      /* focus borders, charts, progress */
+  --primary-muted: #e3e5ff;       /* focus rings, hover borders */
+  --primary-soft: #f1f2ff;        /* tinted backgrounds */
+  --ring: #e3e5ff;
+
+  --secondary: #f1f3f6;           /* neutral chips, tracks */
+  --secondary-foreground: #667085;
+  --accent: #fafbfc;              /* menu item hover */
+  --accent-foreground: #18202f;
+
+  --success: #15956f;
+  --success-soft: #eaf8f3;
+  --success-border: #cdece0;
+  --warning: #b7791f;
+  --warning-soft: #fff7e7;
+  --warning-border: #f4dfae;
+  --warning-row: #fffdf8;
+  --destructive: #c24d63;
+  --destructive-foreground: #ffffff;
+  --destructive-soft: #fff0f2;
+
+  --chart-blue: #6998db;
+  --chart-amber: #dda849;
+  --chart-rose: #d66b7f;
+  --chart-slate: #9aa3b2;
+  --chart-muted: #c7ccd4;
+
+  --overlay: rgb(20 25 38 / 0.38);
+  --overlay-soft: rgb(20 25 38 / 0.28);
+  --shadow-rgb: 16 24 40;
+}
+
+/* ── Dark theme ──────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0c0f15;
+  --foreground: #e8ebf1;
+  --card: #141922;
+  --card-foreground: #e8ebf1;
+  --popover: #171c26;
+  --popover-foreground: #e8ebf1;
+  --muted: #1a202b;
+  --muted-foreground: #a6afbf;
+  --subtle-foreground: #737e92;
+  --border: #252c39;
+  --border-strong: #333c4c;
+  --input: #2a3240;
+
+  --primary: #6d6cf0;
+  --primary-foreground: #ffffff;
+  --primary-hover: #5a59de;
+  --primary-strong: #b4b4ff;
+  --primary-accent: #8584f5;
+  --primary-muted: #2f3366;
+  --primary-soft: #1d2042;
+  --ring: #2f3366;
+
+  --secondary: #212836;
+  --secondary-foreground: #a6afbf;
+  --accent: #1f2633;
+  --accent-foreground: #e8ebf1;
+
+  --success: #3fcf9c;
+  --success-soft: #0f2a22;
+  --success-border: #1d4a3b;
+  --warning: #e8b450;
+  --warning-soft: #2d2412;
+  --warning-border: #5a4520;
+  --warning-row: #1d1a14;
+  --destructive: #f27d92;
+  --destructive-foreground: #ffffff;
+  --destructive-soft: #34181e;
+
+  --chart-blue: #7fa9e8;
+  --chart-amber: #e6b65e;
+  --chart-rose: #e98598;
+  --chart-slate: #8792a6;
+  --chart-muted: #3a4354;
+
+  --overlay: rgb(0 0 0 / 0.55);
+  --overlay-soft: rgb(0 0 0 / 0.45);
+  --shadow-rgb: 0 0 0;
+}
+
+/* ── Elevation (derived from --shadow-rgb, so it adapts per theme) ───────── */
+:root {
+  --elev-card: 0 1px 2px rgb(var(--shadow-rgb) / 0.025), 0 4px 14px rgb(var(--shadow-rgb) / 0.03);
+  --elev-raised: 0 8px 22px rgb(var(--shadow-rgb) / 0.07);
+  --elev-menu: 0 12px 30px rgb(var(--shadow-rgb) / 0.14);
+  --elev-toast: 0 14px 36px rgb(var(--shadow-rgb) / 0.16);
+  --elev-drawer: -18px 0 45px rgb(var(--shadow-rgb) / 0.12);
+  --elev-modal: 0 28px 70px rgb(var(--shadow-rgb) / 0.22);
+}
+[data-theme="dark"] {
+  --elev-card: 0 1px 2px rgb(var(--shadow-rgb) / 0.3), 0 4px 14px rgb(var(--shadow-rgb) / 0.25);
+}
+
+/* ── Phones (< 680px): larger readable type, 16px inputs, tighter layout ─── */
+@media (width < 42.5rem) {
+  :root {
+    --fs-3xs: 0.6875rem;  /* 11px */
+    --fs-2xs: 0.75rem;    /* 12px */
+    --fs-xs: 0.8125rem;   /* 13px */
+    --fs-sm: 0.8125rem;   /* 13px */
+    --fs-md: 0.875rem;    /* 14px */
+    --fs-base: 0.9375rem; /* 15px */
+    --fs-lg: 1rem;        /* 16px */
+    --fs-xl: 1.0625rem;   /* 17px */
+    --fs-2xl: 1.125rem;   /* 18px */
+    --fs-3xl: 1.25rem;    /* 20px */
+    --fs-4xl: 1.375rem;   /* 22px */
+    --fs-5xl: 1.5rem;     /* 24px */
+    --fs-input: 1rem;     /* 16px */
+    --topbar-height: 3.75rem;
+    --page-gap: 0.75rem;
+  }
+}
+
+/* ── Legacy aliases ──────────────────────────────────────────────────────────
+ * Old variable names still used by the pre-Tailwind stylesheets. They point at
+ * the variables above, so they follow the theme. Removed once every component
+ * is on Tailwind (migration task 7). Do not use in new code.
+ */
+:root {
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --text-3xs: var(--fs-3xs); --text-2xs: var(--fs-2xs); --text-xs: var(--fs-xs); --text-sm: var(--fs-sm);
+  --text-md: var(--fs-md); --text-base: var(--fs-base); --text-lg: var(--fs-lg); --text-xl: var(--fs-xl);
+  --text-2xl: var(--fs-2xl); --text-3xl: var(--fs-3xl); --text-4xl: var(--fs-4xl); --text-5xl: var(--fs-5xl);
+  --text-input: var(--fs-input);
+  --radius-xs: var(--r-xs); --radius-sm: var(--r-sm); --radius-md: var(--r-md); --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl); --radius-pill: 999px;
+  --bg: var(--background);
+  --surface: var(--card);
+  --surface-subtle: var(--muted);
+  --text: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-tertiary: var(--subtle-foreground);
+  --text-on-primary: var(--primary-foreground);
+  --danger: var(--destructive);
+  --danger-soft: var(--destructive-soft);
+  --neutral-soft: var(--secondary);
+  --shadow-card: var(--elev-card);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 160ms;
+}

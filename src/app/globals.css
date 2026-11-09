@@ -1,60 +1,168 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "../styles/theme.css";
 
 /*
- * Global base layer. Visual values come from src/styles/tokens.css (loaded
- * first in app/layout.tsx); nothing here hard-codes a colour, font or size.
+ * Global styling entry point.
+ *   - Values (colours, fonts, sizes, themes) live in src/styles/theme.css.
+ *   - This file wires them into Tailwind and sets global element styles
+ *     (headings, paragraphs, links, forms) so pages need no per-element CSS.
  */
 
-/* Make Tailwind utilities speak the same design language as our CSS, so
-   `bg-surface`, `text-primary`, `border-border` etc. follow the active theme. */
+/* `dark:` utilities follow our theme switch (data-theme on <html>), not just the OS. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Turn off Tailwind's built-in palette, text sizes, radii, shadows and screen
+   sizes, so every class must come from our theme. */
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --breakpoint-*: initial;
+
+  /* Screen sizes — mobile-first (`md:` means "this width and up").
+     Mirrored in src/shared/theme/constants.ts for JavaScript. */
+  --breakpoint-xs: 23.75rem; /*  380px  large phones   */
+  --breakpoint-sm: 42.5rem;  /*  680px  tablets        */
+  --breakpoint-md: 57.5rem;  /*  920px  small laptops  */
+  --breakpoint-lg: 73.75rem; /* 1180px  laptops        */
+  --breakpoint-xl: 90rem;    /* 1440px  desktops       */
+  --breakpoint-2xl: 120rem;  /* 1920px  large monitors */
+}
+
+/* Map theme.css variables onto Tailwind utilities. `inline` makes each class
+   read the live variable, so light/dark and phone overrides apply instantly. */
 @theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-subtle: var(--surface-subtle);
-  --color-text: var(--text);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-tertiary: var(--text-tertiary);
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+
+  --text-3xs: var(--fs-3xs);
+  --text-2xs: var(--fs-2xs);
+  --text-xs: var(--fs-xs);
+  --text-sm: var(--fs-sm);
+  --text-md: var(--fs-md);
+  --text-base: var(--fs-base);
+  --text-lg: var(--fs-lg);
+  --text-xl: var(--fs-xl);
+  --text-2xl: var(--fs-2xl);
+  --text-2xl--line-height: 1.3;
+  --text-3xl: var(--fs-3xl);
+  --text-3xl--line-height: 1.25;
+  --text-4xl: var(--fs-4xl);
+  --text-4xl--line-height: 1.15;
+  --text-5xl: var(--fs-5xl);
+  --text-5xl--line-height: 1.25;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-accent: var(--primary-accent);
+  --color-primary-muted: var(--primary-muted);
   --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
   --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-border: var(--success-border);
   --color-warning: var(--warning);
-  --color-danger: var(--danger);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-border: var(--warning-border);
+  --color-warning-row: var(--warning-row);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-chart-blue: var(--chart-blue);
+  --color-chart-amber: var(--chart-amber);
+  --color-chart-rose: var(--chart-rose);
+  --color-chart-slate: var(--chart-slate);
+  --color-chart-muted: var(--chart-muted);
+  --color-overlay: var(--overlay);
+  --color-overlay-soft: var(--overlay-soft);
+
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+
+  --shadow-card: var(--elev-card);
+  --shadow-raised: var(--elev-raised);
+  --shadow-menu: var(--elev-menu);
+  --shadow-toast: var(--elev-toast);
+  --shadow-drawer: var(--elev-drawer);
+  --shadow-modal: var(--elev-modal);
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+/* ── Global element styles ─────────────────────────────────────────────────
+   Semantic HTML gets the right look automatically: use <h1> for page titles,
+   <h3> for card headings, <p> for body copy, and so on. */
+@layer base {
+  *, ::before, ::after { border-color: var(--border); }
 
-body {
-  margin: 0;
-  min-width: 20rem;
-  min-height: 100vh;
-  min-height: 100dvh;
-  color: var(--text);
-  background: var(--bg);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-button, input, select, textarea { font: inherit; color: inherit; }
-button { border: 0; }
-::selection { background: var(--primary-muted); color: var(--text); }
-
-/* Phones: iOS Safari zooms the page when a focused control's text is under
-   16px. Override component sizes for form controls only, at this breakpoint. */
-@media (max-width: 680px) {
-  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
-    font-size: var(--text-input) !important;
+  body {
+    min-width: 20rem;
+    min-height: 100dvh;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-family-sans);
+    font-size: var(--fs-xs);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
-}
 
-/* Respect the OS "reduce motion" setting everywhere. */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  h1, h2, h3, h4, h5, h6 { margin: 0; color: var(--foreground); }
+  h1 { font-size: var(--fs-5xl); line-height: 1.25; font-weight: 650; letter-spacing: -0.035em; }
+  h2 { font-size: var(--fs-3xl); line-height: 1.25; font-weight: 650; letter-spacing: -0.025em; }
+  h3 { font-size: var(--fs-base); line-height: 1.35; font-weight: 650; letter-spacing: -0.01em; }
+  h4 { font-size: var(--fs-xl); line-height: 1.35; font-weight: 650; }
+  h5 { font-size: var(--fs-sm); line-height: 1.4; font-weight: 600; }
+  h6 { font-size: var(--fs-2xs); line-height: 1.4; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--subtle-foreground); }
+
+  p { margin: 0; }
+  small { font-size: var(--fs-2xs); }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { color: var(--primary-hover); }
+  code, kbd { font-family: var(--font-family-mono); font-size: 0.92em; }
+  strong, b { font-weight: 650; }
+
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+  ::selection { background: var(--primary-muted); color: var(--foreground); }
+  :focus-visible { outline: 3px solid var(--ring); outline-offset: 1px; }
+
+  /* Phones: iOS Safari zooms when a focused control's text is under 16px. */
+  @media (width < 42.5rem) {
+    input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+      font-size: var(--fs-input) !important;
+    }
+  }
+
+  /* Respect the OS "reduce motion" setting everywhere. */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

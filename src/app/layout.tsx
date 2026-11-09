@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-// Design tokens must load first: every other stylesheet reads from them.
-import "@/styles/tokens.css";
+// Global styles: Tailwind + the theme (src/styles/theme.css) + element defaults.
 import "./globals.css";
 import { QueryProvider } from "@/shared/lib/api/query-client";
 import { ThemeSync } from "@/shared/theme/ThemeProvider";
