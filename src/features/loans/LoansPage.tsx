@@ -13,18 +13,19 @@ import {
   TrendingDown,
   WalletCards,
 } from "lucide-react";
-import "./loans.css";
-import { Button } from "@/shared/ui/primitives";
-import { PageHeader, CardHeader } from "@/shared/ui/PageHeader";
+import { Badge, Button, Card, IconTile } from "@/shared/ui/primitives";
+import { CardHeader, PageHeader, PeriodRow } from "@/shared/ui/PageHeader";
+import { EmptyState, PageStack, SearchInput } from "@/shared/ui/layout";
+import { Select } from "@/shared/ui/Select";
+import { StatCard, StatGrid } from "@/shared/ui/StatCard";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
+import { CellMain, DataTable, TBody, TD, TH, THead, TR } from "@/shared/ui/table";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { toast } from "@/shared/ui/toast";
 import { exportCsv } from "@/shared/lib/export-csv";
 import { formatCurrency, loanTypes, type Loan } from "./data";
 import { useCreateLoan, useDeleteLoan, useLoans } from "./hooks";
-import { Select } from "@/shared/ui/Select";
-import { StatusBadge } from "@/shared/ui/StatusBadge";
-import { toast } from "@/shared/ui/toast";
-import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { StatCard } from "@/shared/ui/StatCard";
-import { ProgressBar } from "./components/ProgressBar";
+import { LoanCard } from "./components/LoanCard";
 import { AddLoanModal } from "./components/AddLoanModal";
 import { RepaymentModal } from "./components/RepaymentModal";
 import { LoanDrawer } from "./components/LoanDrawer";
@@ -79,17 +80,7 @@ export function LoansPage() {
 
   const exportLoans = () =>
     exportCsv("personal-command-center-loans", [
-      [
-        "Loan",
-        "Lender",
-        "Type",
-        "Original Principal",
-        "Outstanding",
-        "Rate",
-        "EMI",
-        "Next Due",
-        "Status",
-      ],
+      ["Loan", "Lender", "Type", "Original Principal", "Outstanding", "Rate", "EMI", "Next Due", "Status"],
       ...visible.map((loan) => [
         loan.name,
         loan.lender,
@@ -111,7 +102,7 @@ export function LoansPage() {
   };
 
   return (
-    <div className="page-stack loans-page">
+    <PageStack>
       <PageHeader
         title="Loans & EMIs"
         subtitle="Track your loans, monitor outstanding balances, and manage repayments."
@@ -129,66 +120,34 @@ export function LoansPage() {
         }
       />
 
-      <div className="period-row">
-        <span>Portfolio view</span>
+      <PeriodRow label="Portfolio view">
         <Select value={status} onChange={setStatus} label="Filter portfolio status">
           <option>Active loans</option>
           <option>All statuses</option>
         </Select>
-      </div>
+      </PeriodRow>
 
-      <div className="stat-grid">
-        <StatCard
-          icon={CircleDollarSign}
-          label="Total outstanding"
-          value="₹8,42,600"
-          detail="Remaining principal across active loans"
-          tone="indigo"
-        />
-        <StatCard
-          icon={CalendarClock}
-          label="Monthly EMI"
-          value="₹34,250"
-          detail="Total monthly installment commitments"
-          tone="amber"
-        />
-        <StatCard
-          icon={TrendingDown}
-          label="Total repaid"
-          value="₹2,18,400"
-          detail="Principal repaid across tracked loans"
-          tone="emerald"
-        />
-        <StatCard
-          icon={ReceiptIndianRupee}
-          label="Upcoming EMIs"
-          value="3 payments"
-          detail="Payments due within the next 30 days"
-          tone="slate"
-        />
-      </div>
+      <StatGrid>
+        <StatCard icon={CircleDollarSign} label="Total outstanding" value="₹8,42,600" detail="Remaining principal across active loans" tone="indigo" />
+        <StatCard icon={CalendarClock} label="Monthly EMI" value="₹34,250" detail="Total monthly installment commitments" tone="amber" />
+        <StatCard icon={TrendingDown} label="Total repaid" value="₹2,18,400" detail="Principal repaid across tracked loans" tone="emerald" />
+        <StatCard icon={ReceiptIndianRupee} label="Upcoming EMIs" value="3 payments" detail="Payments due within the next 30 days" tone="slate" />
+      </StatGrid>
 
-      <section className="card loan-portfolio">
+      <Card>
         <CardHeader
           title="My loans"
           subtitle="Monitor balances, repayments, and upcoming commitments."
           action={
-            <Button variant="ghost" onClick={() => setRepaymentLoan(loans[0])}>
+            <Button variant="ghost" className="max-xs:hidden" onClick={() => setRepaymentLoan(loans[0])}>
               <Plus size="0.875rem" />
               Record repayment
             </Button>
           }
         />
-        <div className="loan-toolbar">
-          <label className="document-search loan-search">
-            <Search size="1rem" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search loans..."
-            />
-          </label>
-          <div className="loan-filters">
+        <div className="flex flex-col gap-3 px-3 pb-2.75 sm:px-4 sm:pb-3.25 lg:flex-row lg:items-center lg:justify-between">
+          <SearchInput value={query} onChange={setQuery} placeholder="Search loans..." className="lg:w-67.5" />
+          <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap lg:justify-end">
             <Select value={type} onChange={setType} label="Filter by loan type">
               <option>All loan types</option>
               {loanTypes.map((item) => (
@@ -205,171 +164,128 @@ export function LoansPage() {
                 <option key={item}>{item}</option>
               ))}
             </Select>
-            <Select value={sort} onChange={setSort} label="Sort loans">
+            <Select value={sort} onChange={setSort} label="Sort loans" className="sm:min-w-33">
               <option>Next due date</option>
               <option>Outstanding balance</option>
               <option>Recently updated</option>
             </Select>
           </div>
         </div>
+
         {visible.length === 0 ? (
           loans.length === 0 ? (
-            <div className="loan-empty">
-              <span>
-                <Landmark size="1.4375rem" />
-              </span>
-              <strong>No loans added</strong>
-              <p>Add your first loan to start tracking outstanding balances and EMI dates.</p>
-              <Button onClick={() => setAddOpen(true)}>
-                <Plus size="0.9375rem" />
-                Add loan
-              </Button>
-            </div>
+            <EmptyState
+              icon={Landmark}
+              title="No loans added"
+              description="Add your first loan to start tracking outstanding balances and EMI dates."
+              action={
+                <Button onClick={() => setAddOpen(true)}>
+                  <Plus size="0.9375rem" />
+                  Add loan
+                </Button>
+              }
+            />
           ) : (
-            <div className="loan-empty">
-              <span>
-                <Search size="1.375rem" />
-              </span>
-              <strong>No matching loans</strong>
-              <p>Try changing your search term or selected filters.</p>
-              <Button variant="secondary" onClick={resetFilters}>
-                Clear filters
-              </Button>
-            </div>
+            <EmptyState
+              icon={Search}
+              title="No matching loans"
+              description="Try changing your search term or selected filters."
+              action={
+                <Button variant="secondary" onClick={resetFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
           )
         ) : (
-          <div className="loan-card-grid">
+          <div className="grid grid-cols-1 gap-3 border-t border-border p-2.5 max-sm:bg-background sm:grid-cols-2 sm:p-4 sm:pt-3.5 lg:grid-cols-3">
             {visible.map((loan) => (
-              <article className="loan-card" key={loan.id} onClick={() => setSelected(loan)}>
-                <div className="loan-card-top">
-                  <span className="loan-card-icon">
-                    <Landmark size="1.1875rem" />
-                  </span>
-                  <span>
-                    <strong>{loan.name}</strong>
-                    <small>{loan.lender}</small>
-                  </span>
-                  <StatusBadge status={loan.status} />
-                </div>
-                <div className="loan-outstanding">
-                  <span>Outstanding principal</span>
-                  <strong>{formatCurrency(loan.outstanding)}</strong>
-                  <small>of {formatCurrency(loan.original)}</small>
-                </div>
-                <div className="loan-card-progress">
-                  <div>
-                    <ProgressBar progress={loan.progress} />
-                  </div>
-                  <span>{loan.progress}% repaid</span>
-                </div>
-                <div className="loan-card-metrics">
-                  <span>
-                    <small>Interest rate</small>
-                    <strong>{loan.rate}% p.a.</strong>
-                  </span>
-                  <span>
-                    <small>Monthly EMI</small>
-                    <strong>{formatCurrency(loan.emi)}</strong>
-                  </span>
-                </div>
-                <div className="loan-card-due">
-                  <span>
-                    <CalendarClock size="0.9375rem" />
-                    <span>
-                      <small>Next EMI due</small>
-                      <strong>{loan.due}</strong>
-                    </span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setScheduleLoan(loan);
-                    }}
-                  >
-                    View schedule
-                  </button>
-                </div>
-              </article>
+              <LoanCard
+                key={loan.id}
+                loan={loan}
+                onOpen={() => setSelected(loan)}
+                onSchedule={() => setScheduleLoan(loan)}
+              />
             ))}
           </div>
         )}
-        <div className="loan-disclaimer">
+        <p className="rounded-b-lg border-t border-border bg-muted px-4 py-2.5 text-3xs leading-3.25 text-subtle-foreground">
           Illustrative portfolio values for interface preview only. Not financial calculations or
           repayment advice.
-        </div>
-      </section>
+        </p>
+      </Card>
 
-      <section className="card upcoming-emis">
+      <Card className="overflow-hidden">
         <CardHeader
           title="Upcoming EMIs"
           subtitle="Payments due within the next 30 days."
-          action={<span className="badge badge-amber">3 upcoming</span>}
+          action={<Badge tone="amber">3 upcoming</Badge>}
         />
         {loans.length === 0 ? (
-          <div className="upcoming-empty">
-            <CalendarClock size="1.375rem" />
-            <strong>No upcoming EMIs</strong>
-            <span>Upcoming repayments will appear here when you add a loan.</span>
-          </div>
+          <EmptyState
+            compact
+            icon={CalendarClock}
+            title="No upcoming EMIs"
+            description="Upcoming repayments will appear here when you add a loan."
+          />
         ) : (
-          <div className="data-table-wrap">
-            <table className="data-table upcoming-table">
-              <thead>
-                <tr>
-                  <th>Loan</th>
-                  <th>Lender</th>
-                  <th>Due date</th>
-                  <th>EMI amount</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loans.slice(0, 3).map((loan, index) => (
-                  <tr key={loan.id} className={index === 0 ? "next-emi" : ""}>
-                    <td>
-                      <span className="cell-main">
-                        <span className="cell-icon">
+          <DataTable className="sm:min-w-190">
+            <THead>
+              <TH>Loan</TH>
+              <TH>Lender</TH>
+              <TH>Due date</TH>
+              <TH>EMI amount</TH>
+              <TH>Status</TH>
+              <TH align="right">Actions</TH>
+            </THead>
+            <TBody>
+              {loans.slice(0, 3).map((loan, index) => (
+                <TR key={loan.id} className={index === 0 ? "bg-warning-row" : undefined}>
+                  <TD primary>
+                    <CellMain
+                      icon={
+                        <IconTile className="size-7.75 rounded-sm">
                           <WalletCards size="1rem" />
-                        </span>
-                        <span className="cell-text">
-                          <strong>{loan.name}</strong>
-                        </span>
-                      </span>
-                    </td>
-                    <td data-label="Lender" className="hide-mobile">
-                      {loan.lender}
-                    </td>
-                    <td data-label="Due date">{loan.due}</td>
-                    <td data-label="Amount">{formatCurrency(loan.emi)}</td>
-                    <td data-label="Status">
-                      <StatusBadge status={index === 0 ? "Due soon" : "Upcoming"} dot={false} />
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="emi-pay-button"
+                        </IconTile>
+                      }
+                      title={loan.name}
+                    />
+                  </TD>
+                  <TD label="Lender" hideOnMobile>
+                    {loan.lender}
+                  </TD>
+                  <TD label="Due date">{loan.due}</TD>
+                  <TD label="Amount" className="max-sm:text-right">
+                    {formatCurrency(loan.emi)}
+                  </TD>
+                  <TD label="Status">
+                    <StatusBadge status={index === 0 ? "Due soon" : "Upcoming"} dot={false} />
+                  </TD>
+                  <TD align="right" className="max-sm:col-span-full max-sm:text-left">
+                    <span className="inline-flex items-center gap-1.25">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="text-primary hover:border-primary-muted hover:bg-primary-soft hover:text-primary"
                         onClick={() => setRepaymentLoan(loan)}
                       >
                         Record payment
-                      </button>
-                      <button
-                        type="button"
-                        className="row-action"
+                      </Button>
+                      <Button
+                        variant="iconGhost"
+                        ariaLabel={`View ${loan.name} schedule`}
                         onClick={() => setScheduleLoan(loan)}
-                        aria-label={`View ${loan.name} schedule`}
                       >
                         <Eye size="1rem" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </Button>
+                    </span>
+                  </TD>
+                </TR>
+              ))}
+            </TBody>
+          </DataTable>
         )}
-      </section>
+      </Card>
 
       {addOpen && <AddLoanModal onClose={() => setAddOpen(false)} onSave={saveLoan} />}
       {repaymentLoan && (
@@ -408,6 +324,6 @@ export function LoansPage() {
           onConfirm={confirmDelete}
         />
       )}
-    </div>
+    </PageStack>
   );
 }

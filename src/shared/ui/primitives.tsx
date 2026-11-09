@@ -20,9 +20,18 @@ export const buttonVariants = cva(
         ghost: "h-7.5 px-0 bg-transparent text-primary hover:text-primary-strong",
         icon: "relative size-9.5 border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground max-sm:size-11",
         danger: "h-9.5 px-3.5 bg-destructive text-destructive-foreground hover:opacity-90",
+        /** Text-only destructive action, e.g. "Delete" in a drawer. */
+        "danger-ghost": "h-7.5 px-0 bg-transparent text-destructive hover:opacity-80",
+        /** Borderless icon button for rows and dense UI. */
+        iconGhost:
+          "size-7.5 rounded-sm text-subtle-foreground hover:bg-secondary hover:text-foreground max-sm:size-10",
+      },
+      size: {
+        default: "",
+        sm: "h-7 gap-1 px-2.25 text-3xs",
       },
     },
-    defaultVariants: { variant: "primary" },
+    defaultVariants: { variant: "primary", size: "default" },
   },
 );
 
@@ -30,6 +39,7 @@ export type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>["var
 
 export function Button({
   variant,
+  size,
   className,
   ariaLabel,
   type = "button",
@@ -47,7 +57,7 @@ export function Button({
     <Component
       type={asChild ? undefined : type}
       aria-label={ariaLabel ?? props["aria-label"]}
-      className={cn(buttonVariants({ variant }), className)}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   );
@@ -122,6 +132,14 @@ export function IconTile({
   ...props
 }: ComponentProps<"span"> & VariantProps<typeof iconTileVariants>) {
   return <span className={cn(iconTileVariants({ tone, size }), className)} {...props} />;
+}
+
+/* ── Overline: tiny uppercase caption above a value ─────────────────────── */
+
+export function Overline({ className, ...props }: ComponentProps<"span">) {
+  return (
+    <span className={cn("text-3xs tracking-wider text-subtle-foreground uppercase", className)} {...props} />
+  );
 }
 
 /* ── Section header (title + subtitle + optional action, used inside cards) ─ */

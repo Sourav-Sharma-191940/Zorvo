@@ -1,11 +1,12 @@
 "use client";
 
-import { ChevronDown, FileClock, Landmark, Pencil, ReceiptIndianRupee, Trash2 } from "lucide-react";
-import { Button } from "@/shared/ui/primitives";
+import { ChevronRight, FileClock, Landmark, Pencil, ReceiptIndianRupee, Trash2 } from "lucide-react";
+import { Badge, Button, IconTile, Overline } from "@/shared/ui/primitives";
 import { DetailsDrawer } from "@/shared/ui/DetailsDrawer";
+import { InfoTile } from "@/shared/ui/layout";
+import { Progress } from "@/shared/ui/Progress";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
 import { formatCurrency, type Loan } from "../data";
-import { ProgressBar } from "./ProgressBar";
 
 export function LoanDrawer({
   loan,
@@ -24,15 +25,15 @@ export function LoanDrawer({
     <DetailsDrawer
       label={`${loan.name} details`}
       icon={
-        <span className="drawer-icon">
+        <IconTile size="lg">
           <Landmark size="1.4375rem" />
-        </span>
+        </IconTile>
       }
       title={loan.name}
       subtitle={loan.lender}
       badges={
         <>
-          <span className="badge badge-indigo">{loan.type}</span>
+          <Badge tone="indigo">{loan.type}</Badge>
           <StatusBadge status={loan.status} />
         </>
       }
@@ -47,25 +48,23 @@ export function LoanDrawer({
       ]}
       footer={
         <>
-          <div className="loan-repayment-summary">
-            <span>
-              <small>Principal repaid</small>
-              <strong>{formatCurrency(loan.original - loan.outstanding)}</strong>
-            </span>
-            <span>
-              <small>Next payment</small>
-              <strong>{formatCurrency(loan.emi)}</strong>
-            </span>
+          <div className="mt-4 grid grid-cols-2 gap-2.25">
+            <InfoTile label="Principal repaid" value={formatCurrency(loan.original - loan.outstanding)} />
+            <InfoTile label="Next payment" value={formatCurrency(loan.emi)} />
           </div>
-          <button type="button" className="loan-schedule-entry" onClick={onSchedule}>
-            <span className="icon-tile icon-indigo">
+          <button
+            type="button"
+            onClick={onSchedule}
+            className="mt-2.5 grid min-h-14.5 w-full grid-cols-[auto_1fr_auto] items-center gap-2.25 rounded-md border border-border bg-card px-2.5 py-2 text-left text-subtle-foreground transition hover:border-primary-muted hover:bg-primary-soft"
+          >
+            <IconTile className="size-8">
               <FileClock size="1.0625rem" />
+            </IconTile>
+            <span className="flex flex-col gap-0.75">
+              <strong className="text-2xs text-foreground">View EMI schedule</strong>
+              <small className="text-3xs">Installments, components, and payment status</small>
             </span>
-            <span>
-              <strong>View EMI schedule</strong>
-              <small>Installments, components, and payment status</small>
-            </span>
-            <ChevronDown size="1rem" />
+            <ChevronRight size="1rem" />
           </button>
         </>
       }
@@ -81,20 +80,18 @@ export function LoanDrawer({
             <Pencil size="0.9375rem" />
             Edit loan
           </Button>
-          <Button variant="ghost" className="danger-text" onClick={onDelete}>
+          <Button variant="danger-ghost" onClick={onDelete}>
             <Trash2 size="0.9375rem" />
             Delete loan
           </Button>
         </>
       }
     >
-      <div className="loan-balance-panel">
-        <span>Outstanding principal</span>
-        <strong>{formatCurrency(loan.outstanding)}</strong>
-        <div>
-          <ProgressBar progress={loan.progress} />
-        </div>
-        <small>
+      <div className="mt-5 flex flex-col rounded-md bg-muted p-3.75">
+        <Overline>Outstanding principal</Overline>
+        <strong className="mt-1.25 mb-2.5 text-4xl tracking-tight">{formatCurrency(loan.outstanding)}</strong>
+        <Progress value={loan.progress} label={`${loan.name} repaid`} />
+        <small className="mt-1.5 text-3xs text-subtle-foreground">
           {loan.progress}% repaid · {loan.remaining} installments remaining
         </small>
       </div>

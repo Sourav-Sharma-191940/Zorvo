@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import {} from "lucide-react";
 import { Button } from "@/shared/ui/primitives";
 import { FormModal } from "@/shared/ui/FormModal";
+import { DialogFooter } from "@/shared/ui/dialog";
+import { AffixInput, Field, FormGrid, FormRow, FormSelect, Input, Textarea } from "@/shared/ui/form";
 import type { NewLoan } from "../api";
 import { loanTypes } from "../data";
 
@@ -13,6 +14,8 @@ const formatDate = (value: string) =>
     month: "short",
     year: "numeric",
   });
+
+const required = ["name", "lender", "type", "original", "outstanding", "rate", "emi", "start", "end", "due"] as const;
 
 export function AddLoanModal({
   onClose,
@@ -36,21 +39,10 @@ export function AddLoanModal({
     notes: "",
   });
 
-  const required = [
-    "name",
-    "lender",
-    "type",
-    "original",
-    "outstanding",
-    "rate",
-    "emi",
-    "start",
-    "end",
-    "due",
-  ] as const;
-
   const set = (key: keyof typeof values, value: string) =>
     setValues((current) => ({ ...current, [key]: value }));
+  const invalid = (key: keyof typeof values) => submitted && !values[key];
+  const incomplete = submitted && required.some((key) => !values[key]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -71,8 +63,6 @@ export function AddLoanModal({
     });
   };
 
-  const invalid = (key: keyof typeof values) => submitted && !values[key];
-
   return (
     <FormModal
       title="Add loan"
@@ -80,172 +70,111 @@ export function AddLoanModal({
       onSubmit={submit}
       onClose={onClose}
     >
-      <div className="form-grid">
-        <div className="form-row">
-          <label>
-            <span>
-              Loan name <b>*</b>
-            </span>
-            <input
-              className={invalid("name") ? "field-error" : ""}
+      <FormGrid>
+        <FormRow>
+          <Field label="Loan name" required error={invalid("name") && "Enter a loan name."}>
+            <Input
+              invalid={invalid("name")}
               value={values.name}
               onChange={(event) => set("name", event.target.value)}
               placeholder="e.g. Home Loan"
             />
-            {invalid("name") && <em>Enter a loan name.</em>}
-          </label>
-          <label>
-            <span>
-              Lender <b>*</b>
-            </span>
-            <input
-              className={invalid("lender") ? "field-error" : ""}
+          </Field>
+          <Field label="Lender" required error={invalid("lender") && "Enter a lender."}>
+            <Input
+              invalid={invalid("lender")}
               value={values.lender}
               onChange={(event) => set("lender", event.target.value)}
               placeholder="e.g. HDFC Bank"
             />
-            {invalid("lender") && <em>Enter a lender.</em>}
-          </label>
-        </div>
-        <label>
-          <span>
-            Loan type <b>*</b>
-          </span>
-          <select
-            className={invalid("type") ? "field-error" : ""}
-            value={values.type}
-            onChange={(event) => set("type", event.target.value)}
-          >
+          </Field>
+        </FormRow>
+        <Field label="Loan type" required error={invalid("type") && "Select a loan type."}>
+          <FormSelect invalid={invalid("type")} value={values.type} onChange={(event) => set("type", event.target.value)}>
             <option value="">Select loan type</option>
             {loanTypes.map((item) => (
               <option key={item}>{item}</option>
             ))}
-          </select>
-          {invalid("type") && <em>Select a loan type.</em>}
-        </label>
-        <div className="form-row">
-          <label>
-            <span>
-              Original principal <b>*</b>
-            </span>
-            <div className={`currency-input ${invalid("original") ? "field-error" : ""}`.trim()}>
-              <span>₹</span>
-              <input
-                type="number"
-                min="1"
-                value={values.original}
-                onChange={(event) => set("original", event.target.value)}
-                placeholder="0"
-              />
-            </div>
-          </label>
-          <label>
-            <span>
-              Outstanding principal <b>*</b>
-            </span>
-            <div className={`currency-input ${invalid("outstanding") ? "field-error" : ""}`.trim()}>
-              <span>₹</span>
-              <input
-                type="number"
-                min="0"
-                value={values.outstanding}
-                onChange={(event) => set("outstanding", event.target.value)}
-                placeholder="0"
-              />
-            </div>
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Annual interest rate <b>*</b>
-            </span>
-            <div className={`suffix-input ${invalid("rate") ? "field-error" : ""}`.trim()}>
-              <input
-                type="number"
-                step=".1"
-                min="0"
-                value={values.rate}
-                onChange={(event) => set("rate", event.target.value)}
-                placeholder="0.0"
-              />
-              <span>%</span>
-            </div>
-          </label>
-          <label>
-            <span>
-              Monthly EMI <b>*</b>
-            </span>
-            <div className={`currency-input ${invalid("emi") ? "field-error" : ""}`.trim()}>
-              <span>₹</span>
-              <input
-                type="number"
-                min="1"
-                value={values.emi}
-                onChange={(event) => set("emi", event.target.value)}
-                placeholder="0"
-              />
-            </div>
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Loan start date <b>*</b>
-            </span>
-            <input
-              className={invalid("start") ? "field-error" : ""}
-              type="date"
-              value={values.start}
-              onChange={(event) => set("start", event.target.value)}
+          </FormSelect>
+        </Field>
+        <FormRow>
+          <Field label="Original principal" required>
+            <AffixInput
+              prefix="₹"
+              type="number"
+              min="1"
+              inputMode="decimal"
+              invalid={invalid("original")}
+              value={values.original}
+              onChange={(event) => set("original", event.target.value)}
+              placeholder="0"
             />
-          </label>
-          <label>
-            <span>
-              Loan end date <b>*</b>
-            </span>
-            <input
-              className={invalid("end") ? "field-error" : ""}
-              type="date"
-              value={values.end}
-              onChange={(event) => set("end", event.target.value)}
+          </Field>
+          <Field label="Outstanding principal" required>
+            <AffixInput
+              prefix="₹"
+              type="number"
+              min="0"
+              inputMode="decimal"
+              invalid={invalid("outstanding")}
+              value={values.outstanding}
+              onChange={(event) => set("outstanding", event.target.value)}
+              placeholder="0"
             />
-          </label>
-        </div>
-        <label>
-          <span>
-            Next due date <b>*</b>
-          </span>
-          <input
-            className={invalid("due") ? "field-error" : ""}
-            type="date"
-            value={values.due}
-            onChange={(event) => set("due", event.target.value)}
-          />
-          {submitted && required.some((key) => !values[key]) && (
-            <em>Complete all required fields before saving.</em>
-          )}
-        </label>
-        <label>
-          <span>
-            Notes <small>Optional</small>
-          </span>
-          <textarea
-            rows={3}
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Annual interest rate" required>
+            <AffixInput
+              suffix="%"
+              type="number"
+              step=".1"
+              min="0"
+              inputMode="decimal"
+              invalid={invalid("rate")}
+              value={values.rate}
+              onChange={(event) => set("rate", event.target.value)}
+              placeholder="0.0"
+            />
+          </Field>
+          <Field label="Monthly EMI" required>
+            <AffixInput
+              prefix="₹"
+              type="number"
+              min="1"
+              inputMode="decimal"
+              invalid={invalid("emi")}
+              value={values.emi}
+              onChange={(event) => set("emi", event.target.value)}
+              placeholder="0"
+            />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Loan start date" required>
+            <Input invalid={invalid("start")} type="date" value={values.start} onChange={(event) => set("start", event.target.value)} />
+          </Field>
+          <Field label="Loan end date" required>
+            <Input invalid={invalid("end")} type="date" value={values.end} onChange={(event) => set("end", event.target.value)} />
+          </Field>
+        </FormRow>
+        <Field label="Next due date" required error={incomplete && "Complete all required fields before saving."}>
+          <Input invalid={invalid("due")} type="date" value={values.due} onChange={(event) => set("due", event.target.value)} />
+        </Field>
+        <Field label="Notes" optional>
+          <Textarea
             value={values.notes}
             onChange={(event) => set("notes", event.target.value)}
             placeholder="Add any helpful context..."
           />
-        </label>
-      </div>
-      <div className="form-modal-footer">
+        </Field>
+      </FormGrid>
+      <DialogFooter>
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <button type="submit" className="button button-primary">
-          Save loan
-        </button>
-      </div>
+        <Button type="submit">Save loan</Button>
+      </DialogFooter>
     </FormModal>
   );
 }

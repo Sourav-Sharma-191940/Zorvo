@@ -137,6 +137,62 @@ export function ViewToggle({
   );
 }
 
+/** Small label/value box, e.g. "Monthly EMI ₹28,450". */
+export function InfoTile({
+  label,
+  value,
+  className,
+}: {
+  label: string;
+  value: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={cn("flex flex-col gap-1.25 rounded-md border border-border bg-muted px-3 py-2.75", className)}>
+      <small className="text-3xs text-subtle-foreground">{label}</small>
+      <strong className="text-sm">{value}</strong>
+    </span>
+  );
+}
+
+/** Single-choice filter chips, e.g. "All · Upcoming · Paid". Scrolls sideways on phones. */
+export function FilterChips<T extends string>({
+  options,
+  value,
+  onChange,
+  label,
+  className,
+}: {
+  options: readonly T[];
+  value: T;
+  onChange: (value: T) => void;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className={cn("flex max-w-full gap-1 overflow-x-auto [scrollbar-width:none]", className)}
+    >
+      {options.map((option) => (
+        <button
+          type="button"
+          key={option}
+          aria-pressed={value === option}
+          onClick={() => onChange(option)}
+          className={cn(
+            "h-7 shrink-0 rounded-sm px-2.25 text-3xs font-semibold whitespace-nowrap text-muted-foreground transition hover:text-foreground",
+            value === option && "bg-primary-soft text-primary-strong hover:text-primary-strong",
+          )}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** "Showing x of y" row with pager, at the bottom of a list card. */
 export function TableFooter({ shown, total, noun }: { shown: number; total: number; noun: string }) {
   return (

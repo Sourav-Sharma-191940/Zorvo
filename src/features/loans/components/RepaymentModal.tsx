@@ -4,6 +4,8 @@ import { useState, type FormEvent } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/shared/ui/primitives";
 import { FormModal } from "@/shared/ui/FormModal";
+import { DialogFooter } from "@/shared/ui/dialog";
+import { AffixInput, Field, FormGrid, FormRow, FormSelect, Input, Textarea } from "@/shared/ui/form";
 import type { Loan } from "../data";
 
 export function RepaymentModal({
@@ -38,111 +40,72 @@ export function RepaymentModal({
       onSubmit={submit}
       onClose={onClose}
     >
-      <div className="form-grid">
-        <label>
-          <span>
-            Select loan <b>*</b>
-          </span>
-          <select
-            className={submitted && !loanId ? "field-error" : ""}
-            value={loanId}
-            onChange={(event) => setLoanId(event.target.value)}
-          >
+      <FormGrid>
+        <Field label="Select loan" required>
+          <FormSelect invalid={submitted && !loanId} value={loanId} onChange={(event) => setLoanId(event.target.value)}>
             <option value="">Choose a loan</option>
             {loans.map((loan) => (
               <option key={loan.id} value={loan.id}>
                 {loan.name} · {loan.lender}
               </option>
             ))}
-          </select>
-        </label>
-        <div className="form-row">
-          <label>
-            <span>
-              Payment date <b>*</b>
-            </span>
-            <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
-          </label>
-          <label>
-            <span>
-              Amount paid <b>*</b>
-            </span>
-            <div className={`currency-input ${submitted && !amount ? "field-error" : ""}`.trim()}>
-              <span>₹</span>
-              <input
-                type="number"
-                min="1"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-                placeholder="0"
-              />
-            </div>
-          </label>
-        </div>
-        <label>
-          <span>
-            Payment method <b>*</b>
-          </span>
-          <select
-            className={submitted && !method ? "field-error" : ""}
-            value={method}
-            onChange={(event) => setMethod(event.target.value)}
-          >
+          </FormSelect>
+        </Field>
+        <FormRow>
+          <Field label="Payment date" required>
+            <Input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
+          </Field>
+          <Field label="Amount paid" required>
+            <AffixInput
+              prefix="₹"
+              type="number"
+              min="1"
+              inputMode="decimal"
+              invalid={submitted && !amount}
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              placeholder="0"
+            />
+          </Field>
+        </FormRow>
+        <Field
+          label="Payment method"
+          required
+          error={submitted && (!loanId || !amount || !method) && "Complete all required payment details."}
+        >
+          <FormSelect invalid={submitted && !method} value={method} onChange={(event) => setMethod(event.target.value)}>
             <option value="">Select payment method</option>
             <option>Bank transfer</option>
             <option>UPI</option>
             <option>Auto-debit</option>
             <option>Cheque</option>
-          </select>
-          {submitted && (!loanId || !amount || !method) && (
-            <em>Complete all required payment details.</em>
-          )}
-        </label>
-        <div className="form-row">
-          <label>
-            <span>
-              Principal component <small>Optional</small>
-            </span>
-            <div className="currency-input">
-              <span>₹</span>
-              <input type="number" placeholder="0" />
-            </div>
-          </label>
-          <label>
-            <span>
-              Interest component <small>Optional</small>
-            </span>
-            <div className="currency-input">
-              <span>₹</span>
-              <input type="number" placeholder="0" />
-            </div>
-          </label>
-        </div>
-        <label>
-          <span>
-            Reference number <small>Optional</small>
-          </span>
-          <input placeholder="e.g. UTR or transaction ID" />
-        </label>
-        <label>
-          <span>
-            Notes <small>Optional</small>
-          </span>
-          <textarea rows={3} placeholder="Add payment notes..." />
-        </label>
-      </div>
-      <div className="repayment-confirm-note">
-        <Check size="0.875rem" />
+          </FormSelect>
+        </Field>
+        <FormRow>
+          <Field label="Principal component" optional>
+            <AffixInput prefix="₹" type="number" inputMode="decimal" placeholder="0" />
+          </Field>
+          <Field label="Interest component" optional>
+            <AffixInput prefix="₹" type="number" inputMode="decimal" placeholder="0" />
+          </Field>
+        </FormRow>
+        <Field label="Reference number" optional>
+          <Input placeholder="e.g. UTR or transaction ID" />
+        </Field>
+        <Field label="Notes" optional>
+          <Textarea placeholder="Add payment notes..." />
+        </Field>
+      </FormGrid>
+      <p className="mt-3 flex items-center gap-1.5 rounded-sm bg-primary-soft px-2.5 py-2.25 text-3xs text-primary-strong">
+        <Check size="0.875rem" className="shrink-0" />
         The payment is recorded only after you select &ldquo;Record payment&rdquo;.
-      </div>
-      <div className="form-modal-footer">
+      </p>
+      <DialogFooter>
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <button type="submit" className="button button-primary">
-          Record payment
-        </button>
-      </div>
+        <Button type="submit">Record payment</Button>
+      </DialogFooter>
     </FormModal>
   );
 }
