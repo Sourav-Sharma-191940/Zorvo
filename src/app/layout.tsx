@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/shared/lib/api/query-client";
 import { ThemeSync } from "@/shared/theme/ThemeProvider";
+import { Toaster } from "@/shared/ui/toast";
 import { themeInitScript } from "@/shared/theme/runtime";
 import { THEME_BROWSER_COLOR } from "@/shared/theme/constants";
 
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <ThemeSync />
         <QueryProvider>{children}</QueryProvider>
+        <Toaster />
       </body>
     </html>
   );

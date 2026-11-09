@@ -38,7 +38,7 @@ import {
   useUpdateSubscription,
 } from "./hooks";
 import { Select } from "@/shared/ui/Select";
-import { Toast, useToast } from "@/shared/ui/Toast";
+import { toast } from "@/shared/ui/toast";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { ActionMenu } from "@/shared/ui/ActionMenu";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
@@ -66,7 +66,6 @@ export function SubscriptionsPage() {
     item: Subscription;
     action: "cancel" | "delete";
   } | null>(null);
-  const { toast, notify } = useToast();
 
   const visible = useMemo(() => {
     const filtered = subscriptions.filter(
@@ -124,13 +123,13 @@ export function SubscriptionsPage() {
     }
     setFormItem(null);
     setSelected(null);
-    notify(exists ? "Subscription updated" : "Subscription added successfully");
+    toast.success(exists ? "Subscription updated" : "Subscription added successfully");
   };
 
   const updateStatus = (item: Subscription, next: SubscriptionStatus) => {
     updateSubscription.mutate({ ...item, status: next });
     setSelected(null);
-    notify(
+    toast.success(
       next === "Paused"
         ? "Subscription paused"
         : next === "Active"
@@ -141,17 +140,17 @@ export function SubscriptionsPage() {
 
   const markPaid = (item: Subscription) => {
     setSelected(null);
-    notify(`${item.name} renewal marked as paid`);
+    toast.success(`${item.name} renewal marked as paid`);
   };
 
   const confirm = () => {
     if (!confirming) return;
     if (confirming.action === "delete") {
       deleteSubscription.mutate(confirming.item.id);
-      notify("Subscription deleted");
+      toast.success("Subscription deleted");
     } else {
       updateSubscription.mutate({ ...confirming.item, status: "Cancelled" });
-      notify("Subscription cancelled");
+      toast.success("Subscription cancelled");
     }
     setConfirming(null);
     setSelected(null);
@@ -543,7 +542,6 @@ export function SubscriptionsPage() {
           onConfirm={confirm}
         />
       )}
-      <Toast message={toast} />
     </div>
   );
 }

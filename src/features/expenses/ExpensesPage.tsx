@@ -30,7 +30,7 @@ import {
 } from "./hooks";
 import { StatCard } from "@/shared/ui/StatCard";
 import { Select } from "@/shared/ui/Select";
-import { Toast, useToast } from "@/shared/ui/Toast";
+import { toast } from "@/shared/ui/toast";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { ActionMenu } from "@/shared/ui/ActionMenu";
 import { TrendChart } from "./components/TrendChart";
@@ -52,7 +52,6 @@ export function ExpensesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
-  const { toast, notify } = useToast();
   const [periodLoading, setPeriodLoading] = useState(false);
 
   const loading = isLoading || periodLoading;
@@ -81,18 +80,18 @@ export function ExpensesPage() {
   const saveTransaction = (input: Parameters<typeof createTransaction.mutate>[0]) => {
     createTransaction.mutate(input);
     setModalOpen(false);
-    notify("Transaction added successfully");
+    toast.success("Transaction added successfully");
   };
 
   const onDuplicate = (transaction: Transaction) => {
     duplicateTransaction.mutate(transaction);
-    notify("Transaction duplicated");
+    toast.success("Transaction duplicated");
   };
 
   const confirmDelete = () => {
     if (deleting) deleteTransaction.mutate(deleting.id);
     setDeleting(null);
-    notify("Transaction deleted");
+    toast.success("Transaction deleted");
   };
 
   const exportTransactions = () =>
@@ -451,7 +450,6 @@ export function ExpensesPage() {
           onConfirm={confirmDelete}
         />
       )}
-      <Toast message={toast} />
     </div>
   );
 }

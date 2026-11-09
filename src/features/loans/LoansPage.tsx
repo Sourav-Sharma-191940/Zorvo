@@ -21,7 +21,7 @@ import { formatCurrency, loanTypes, type Loan } from "./data";
 import { useCreateLoan, useDeleteLoan, useLoans } from "./hooks";
 import { Select } from "@/shared/ui/Select";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
-import { Toast, useToast } from "@/shared/ui/Toast";
+import { toast } from "@/shared/ui/toast";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { StatCard } from "@/shared/ui/StatCard";
 import { ProgressBar } from "./components/ProgressBar";
@@ -45,7 +45,6 @@ export function LoansPage() {
   const [scheduleLoan, setScheduleLoan] = useState<Loan | null>(null);
   const [repaymentLoan, setRepaymentLoan] = useState<Loan | undefined>();
   const [deleting, setDeleting] = useState<Loan | null>(null);
-  const { toast, notify } = useToast();
 
   const visible = useMemo(() => {
     const filtered = loans.filter(
@@ -64,18 +63,18 @@ export function LoansPage() {
   const saveLoan = (loan: Parameters<typeof createLoan.mutate>[0]) => {
     createLoan.mutate(loan);
     setAddOpen(false);
-    notify("Loan added successfully");
+    toast.success("Loan added successfully");
   };
 
   const recordRepayment = () => {
     setRepaymentLoan(undefined);
-    notify("Repayment recorded successfully");
+    toast.success("Repayment recorded successfully");
   };
 
   const confirmDelete = () => {
     if (deleting) deleteLoan.mutate(deleting.id);
     setDeleting(null);
-    notify("Loan deleted");
+    toast.success("Loan deleted");
   };
 
   const exportLoans = () =>
@@ -409,7 +408,6 @@ export function LoansPage() {
           onConfirm={confirmDelete}
         />
       )}
-      <Toast message={toast} />
     </div>
   );
 }
