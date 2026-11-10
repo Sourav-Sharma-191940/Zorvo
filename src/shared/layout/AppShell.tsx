@@ -1,7 +1,4 @@
 import type { ReactNode } from "react";
-// Pre-Tailwind styles still used by feature pages; removed once they're migrated.
-import "./shell.css";
-import "./data-table.css";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 

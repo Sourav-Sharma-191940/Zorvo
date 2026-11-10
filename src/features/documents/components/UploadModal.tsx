@@ -2,8 +2,12 @@
 
 import { useRef, useState, type DragEvent } from "react";
 import { CheckCircle2, CircleAlert, FileUp, Upload } from "lucide-react";
-import { Button } from "@/shared/ui/primitives";
+import { Button, IconTile } from "@/shared/ui/primitives";
 import { FormModal } from "@/shared/ui/FormModal";
+import { DialogFooter } from "@/shared/ui/dialog";
+import { CheckTile, Field, FormGrid, FormRow, FormSelect, Input, Textarea } from "@/shared/ui/form";
+import { Progress } from "@/shared/ui/Progress";
+import { cn } from "@/shared/lib/utils";
 import { documentCategories } from "../data";
 
 type UploadPhase = "form" | "uploading" | "success" | "error";
@@ -13,6 +17,7 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
   const [fileName, setFileName] = useState("");
   const [phase, setPhase] = useState<UploadPhase>("form");
   const [dragging, setDragging] = useState(false);
+  const [reminder, setReminder] = useState(true);
 
   const chooseFile = (name: string) => {
     setFileName(name);
@@ -42,18 +47,24 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
       onClose={onClose}
     >
       {phase === "success" ? (
-        <div className="upload-success">
-          <span>
+        <div className="flex min-h-82.5 flex-col items-center justify-center text-center">
+          <IconTile tone="emerald" className="size-13.5 rounded-full">
             <CheckCircle2 size="1.75rem" />
-          </span>
-          <strong>Document uploaded</strong>
-          <p>{fileName} is now safely stored in your document vault.</p>
+          </IconTile>
+          <strong className="mt-3.5 text-lg">Document uploaded</strong>
+          <p className="mt-1.5 mb-4.5 max-w-82.5 text-xs leading-4 text-muted-foreground">
+            {fileName} is now safely stored in your document vault.
+          </p>
           <Button onClick={onClose}>Done</Button>
         </div>
       ) : (
         <>
           <div
-            className={`drop-zone ${dragging ? "dragging" : ""} ${phase === "error" ? "drop-error" : ""}`.trim()}
+            className={cn(
+              "flex min-h-32.5 flex-col items-center justify-center rounded-lg border border-dashed border-border-strong bg-muted p-4 text-center transition sm:min-h-35.5",
+              dragging && "border-primary-accent bg-primary-soft",
+              phase === "error" && "border-destructive bg-destructive-soft",
+            )}
             onDragOver={(event) => {
               event.preventDefault();
               setDragging(true);
@@ -61,11 +72,13 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
             onDragLeave={() => setDragging(false)}
             onDrop={dropFile}
           >
-            <span className="drop-icon">
+            <IconTile className="mb-2">
               <FileUp size="1.5rem" />
-            </span>
-            <strong>{fileName || "Drag and drop your document here"}</strong>
-            <small>{fileName ? "Ready to upload" : "PDF, JPG or PNG · Maximum 20 MB"}</small>
+            </IconTile>
+            <strong className="text-xs">{fileName || "Drag and drop your document here"}</strong>
+            <small className="mt-0.75 mb-2.5 text-2xs text-subtle-foreground">
+              {fileName ? "Ready to upload" : "PDF, JPG or PNG · Maximum 20 MB"}
+            </small>
             <Button variant="secondary" onClick={() => inputRef.current?.click()}>
               {fileName ? "Choose another file" : "Browse files"}
             </Button>
@@ -81,72 +94,60 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
           </div>
 
           {phase === "error" && (
-            <div className="upload-error">
+            <div role="alert" className="mt-1.75 flex items-center gap-1.5 text-2xs text-destructive">
               <CircleAlert size="0.9375rem" />
               Select a supported file before uploading.
             </div>
           )}
           {phase === "uploading" && (
-            <div className="upload-progress">
-              <div>
+            <div className="mt-2.5 grid gap-1.5">
+              <div className="flex justify-between text-2xs text-muted-foreground">
                 <span>Uploading {fileName}</span>
                 <strong>72%</strong>
               </div>
-              <div className="progress-track">
-                <span />
-              </div>
+              <Progress value={72} label="Upload progress" className="animate-pulse" />
             </div>
           )}
 
-          <div className="form-grid">
-            <label>
-              <span>Document name</span>
-              <input
+          <FormGrid className="mt-4">
+            <Field label="Document name">
+              <Input
                 defaultValue={fileName.replace(/\.[^/.]+$/, "")}
                 placeholder="e.g. Car insurance policy"
               />
-            </label>
-            <div className="form-row">
-              <label>
-                <span>Category</span>
-                <select defaultValue="">
+            </Field>
+            <FormRow>
+              <Field label="Category">
+                <FormSelect defaultValue="">
                   <option value="" disabled>
                     Select category
                   </option>
                   {documentCategories.slice(1).map((category) => (
                     <option key={category}>{category}</option>
                   ))}
-                </select>
-              </label>
-              <label>
-                <span>Issue date</span>
-                <input type="date" />
-              </label>
-            </div>
-            <div className="form-row">
-              <label>
-                <span>
-                  Expiry date <em>Optional</em>
-                </span>
-                <input type="date" />
-              </label>
-              <label className="check-tile">
-                <input type="checkbox" defaultChecked />
-                <span>
-                  <strong>Expiry reminder</strong>
-                  <small>Notify me 30 days before</small>
-                </span>
-              </label>
-            </div>
-            <label>
-              <span>
-                Notes <em>Optional</em>
-              </span>
-              <textarea placeholder="Add any helpful context..." rows={3} />
-            </label>
-          </div>
+                </FormSelect>
+              </Field>
+              <Field label="Issue date">
+                <Input type="date" />
+              </Field>
+            </FormRow>
+            <FormRow>
+              <Field label="Expiry date" optional>
+                <Input type="date" />
+              </Field>
+              <CheckTile
+                title="Expiry reminder"
+                description="Notify me 30 days before"
+                checked={reminder}
+                onChange={setReminder}
+              />
+            </FormRow>
+            <Field label="Notes" optional>
+              <Textarea placeholder="Add any helpful context..." />
+            </Field>
+          </FormGrid>
 
-          <div className="form-modal-footer">
+          <DialogFooter>
             <Button variant="secondary" onClick={onClose}>
               Cancel
             </Button>
@@ -154,7 +155,7 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
               <Upload size="1rem" />
               {phase === "uploading" ? "Uploading..." : "Upload document"}
             </Button>
-          </div>
+          </DialogFooter>
         </>
       )}
     </FormModal>
