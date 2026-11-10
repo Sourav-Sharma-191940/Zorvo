@@ -4,6 +4,9 @@ import { useState, type FormEvent } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/shared/ui/primitives";
 import { FormModal } from "@/shared/ui/FormModal";
+import { DialogFooter } from "@/shared/ui/dialog";
+import { AffixInput, Field, FormGrid, FormRow, FormSelect, Input, Textarea } from "@/shared/ui/form";
+import { cn } from "@/shared/lib/utils";
 import type { NewTransaction } from "../api";
 import { expenseCategories, incomeCategories, paymentMethods, type TransactionType } from "../data";
 
@@ -50,66 +53,60 @@ export function AddTransactionModal({
       onSubmit={submit}
       onClose={onClose}
     >
-      <div className="transaction-segment">
-        <button
-          type="button"
-          className={type === "Expense" ? "active" : ""}
-          onClick={() => {
-            setType("Expense");
-            setCategory("");
-          }}
-        >
-          <ArrowDownRight size="0.9375rem" />
-          Expense
-        </button>
-        <button
-          type="button"
-          className={type === "Income" ? "active" : ""}
-          onClick={() => {
-            setType("Income");
-            setCategory("");
-          }}
-        >
-          <ArrowUpRight size="0.9375rem" />
-          Income
-        </button>
+      <div
+        role="group"
+        aria-label="Transaction type"
+        className="mb-3 grid grid-cols-2 gap-1 rounded-md bg-secondary p-1"
+      >
+        {(
+          [
+            { value: "Expense", icon: ArrowDownRight },
+            { value: "Income", icon: ArrowUpRight },
+          ] as const
+        ).map(({ value, icon: Icon }) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={type === value}
+            onClick={() => {
+              setType(value);
+              setCategory("");
+            }}
+            className={cn(
+              "flex h-8.5 items-center justify-center gap-1.5 rounded-sm text-xs font-semibold text-muted-foreground transition",
+              type === value && "bg-card text-primary-strong shadow-card",
+            )}
+          >
+            <Icon size="0.9375rem" />
+            {value}
+          </button>
+        ))}
       </div>
-      <div className="form-grid">
-        <label>
-          <span>
-            Description <b>*</b>
-          </span>
-          <input
-            className={invalid(description) ? "field-error" : ""}
+      <FormGrid>
+        <Field label="Description" required error={invalid(description) && "Enter a description."}>
+          <Input
+            invalid={invalid(description)}
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="e.g. Grocery shopping"
           />
-          {invalid(description) && <em>Enter a description.</em>}
-        </label>
-        <div className="form-row">
-          <label>
-            <span>
-              Amount in INR <b>*</b>
-            </span>
-            <div className={`currency-input ${invalid(amount) ? "field-error" : ""}`.trim()}>
-              <span>₹</span>
-              <input
-                type="number"
-                min="1"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-                placeholder="0.00"
-              />
-            </div>
-            {invalid(amount) && <em>Enter an amount.</em>}
-          </label>
-          <label>
-            <span>
-              Category <b>*</b>
-            </span>
-            <select
-              className={invalid(category) ? "field-error" : ""}
+        </Field>
+        <FormRow>
+          <Field label="Amount in INR" required error={invalid(amount) && "Enter an amount."}>
+            <AffixInput
+              prefix="₹"
+              type="number"
+              min="1"
+              inputMode="decimal"
+              invalid={invalid(amount)}
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              placeholder="0.00"
+            />
+          </Field>
+          <Field label="Category" required error={invalid(category) && "Select a category."}>
+            <FormSelect
+              invalid={invalid(category)}
               value={category}
               onChange={(event) => setCategory(event.target.value)}
             >
@@ -117,28 +114,21 @@ export function AddTransactionModal({
               {categories.map((item) => (
                 <option key={item}>{item}</option>
               ))}
-            </select>
-            {invalid(category) && <em>Select a category.</em>}
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <span>
-              Transaction date <b>*</b>
-            </span>
-            <input
-              className={invalid(date) ? "field-error" : ""}
+            </FormSelect>
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field label="Transaction date" required>
+            <Input
+              invalid={invalid(date)}
               type="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
             />
-          </label>
-          <label>
-            <span>
-              Payment method <b>*</b>
-            </span>
-            <select
-              className={invalid(payment) ? "field-error" : ""}
+          </Field>
+          <Field label="Payment method" required error={invalid(payment) && "Select a payment method."}>
+            <FormSelect
+              invalid={invalid(payment)}
               value={payment}
               onChange={(event) => setPayment(event.target.value)}
             >
@@ -146,36 +136,27 @@ export function AddTransactionModal({
               {paymentMethods.map((method) => (
                 <option key={method}>{method}</option>
               ))}
-            </select>
-            {invalid(payment) && <em>Select a payment method.</em>}
-          </label>
-        </div>
-        <label>
-          <span>
-            Account <small>Optional</small>
-          </span>
-          <select defaultValue="">
+            </FormSelect>
+          </Field>
+        </FormRow>
+        <Field label="Account" optional>
+          <FormSelect defaultValue="">
             <option value="">Select account</option>
             <option>HDFC Savings</option>
             <option>ICICI Credit Card</option>
             <option>Cash wallet</option>
-          </select>
-        </label>
-        <label>
-          <span>
-            Notes <small>Optional</small>
-          </span>
-          <textarea rows={3} placeholder="Add any helpful context..." />
-        </label>
-      </div>
-      <div className="form-modal-footer">
+          </FormSelect>
+        </Field>
+        <Field label="Notes" optional>
+          <Textarea placeholder="Add any helpful context..." />
+        </Field>
+      </FormGrid>
+      <DialogFooter>
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <button className="button button-primary" type="submit">
-          Save transaction
-        </button>
-      </div>
+        <Button type="submit">Save transaction</Button>
+      </DialogFooter>
     </FormModal>
   );
 }

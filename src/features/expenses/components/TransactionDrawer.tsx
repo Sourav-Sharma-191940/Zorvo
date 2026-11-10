@@ -1,9 +1,10 @@
 "use client";
 
 import { ArrowDownRight, ArrowUpRight, Copy, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/shared/ui/primitives";
+import { Badge, Button, IconTile } from "@/shared/ui/primitives";
 import { DetailsDrawer } from "@/shared/ui/DetailsDrawer";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
+import { cn } from "@/shared/lib/utils";
 import { formatCurrency, type Transaction } from "../data";
 
 export function TransactionDrawer({
@@ -20,14 +21,14 @@ export function TransactionDrawer({
     <DetailsDrawer
       label={`${transaction.description} details`}
       icon={
-        <span className={`drawer-icon ${isIncome ? "positive" : ""}`.trim()}>
+        <IconTile tone={isIncome ? "emerald" : "indigo"} size="lg">
           {isIncome ? <ArrowUpRight size="1.375rem" /> : <ArrowDownRight size="1.375rem" />}
-        </span>
+        </IconTile>
       }
       title={transaction.description}
       badges={
         <>
-          <span className="badge badge-slate">{transaction.category}</span>
+          <Badge tone="slate">{transaction.category}</Badge>
           <StatusBadge
             status={transaction.type}
             tone={isIncome ? "emerald" : "indigo"}
@@ -54,14 +55,19 @@ export function TransactionDrawer({
             <Copy size="0.9375rem" />
             Duplicate
           </Button>
-          <Button variant="ghost" className="danger-text" onClick={onDelete}>
+          <Button variant="danger-ghost" onClick={onDelete}>
             <Trash2 size="0.9375rem" />
             Delete
           </Button>
         </>
       }
     >
-      <div className={`drawer-amount ${isIncome ? "positive" : ""}`.trim()}>
+      <div
+        className={cn(
+          "mt-5.5 rounded-md p-4 text-4xl font-bold tracking-tight",
+          isIncome ? "bg-success-soft text-success" : "bg-muted text-foreground",
+        )}
+      >
         {isIncome ? "+" : "−"} {formatCurrency(transaction.amount)}
       </div>
     </DetailsDrawer>

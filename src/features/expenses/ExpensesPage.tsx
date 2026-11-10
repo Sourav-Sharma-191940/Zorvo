@@ -17,23 +17,27 @@ import {
   TrendingDown,
   WalletCards,
 } from "lucide-react";
-import "./expenses.css";
-import { Button } from "@/shared/ui/primitives";
-import { PageHeader } from "@/shared/ui/PageHeader";
+import { Badge, Button, Card, IconTile, SectionHeader } from "@/shared/ui/primitives";
+import { CardHeader, PageHeader, PeriodRow } from "@/shared/ui/PageHeader";
+import { EmptyState, PageStack, SearchInput, TableFooter } from "@/shared/ui/layout";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
+import { CellMain, DataTable, TBody, TD, TH, THead, TR } from "@/shared/ui/table";
+import { cn } from "@/shared/lib/utils";
 import { exportCsv } from "@/shared/lib/export-csv";
-import { categoryBreakdown, formatCurrency, periods, type Transaction } from "./data";
+import { formatCurrency, periods, type Transaction } from "./data";
 import {
   useCreateTransaction,
   useDeleteTransaction,
   useDuplicateTransaction,
   useTransactions,
 } from "./hooks";
-import { StatCard } from "@/shared/ui/StatCard";
+import { StatCard, StatGrid } from "@/shared/ui/StatCard";
 import { Select } from "@/shared/ui/Select";
 import { toast } from "@/shared/ui/toast";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { ActionMenu } from "@/shared/ui/ActionMenu";
 import { TrendChart } from "./components/TrendChart";
+import { CategoryDonut } from "./components/CategoryDonut";
 import { AddTransactionModal } from "./components/AddTransactionModal";
 import { TransactionDrawer } from "./components/TransactionDrawer";
 
@@ -115,7 +119,7 @@ export function ExpensesPage() {
   };
 
   return (
-    <div className="page-stack expenses-page">
+    <PageStack>
       <PageHeader
         title="Expenses"
         subtitle="Track your spending, manage income, and understand where your money goes."
@@ -133,16 +137,15 @@ export function ExpensesPage() {
         }
       />
 
-      <div className="period-row">
-        <span>Overview for</span>
+      <PeriodRow label="Overview for">
         <Select value={period} onChange={changePeriod} label="Select overview period">
           {periods.map((item) => (
             <option key={item}>{item}</option>
           ))}
         </Select>
-      </div>
+      </PeriodRow>
 
-      <div className="stat-grid">
+      <StatGrid>
         <StatCard
           icon={ArrowDownRight}
           label="Total expenses"
@@ -172,90 +175,73 @@ export function ExpensesPage() {
           detail="Across all payment methods"
           tone="slate"
         />
-      </div>
+      </StatGrid>
 
-      <div className="expense-analytics-grid">
-        <section className="card expense-trend-card">
-          <div className="expense-card-header">
-            <div>
-              <strong>Spending trend</strong>
-              <span>Track how your expenses change over time.</span>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3.5 *:min-w-0 lg:grid-cols-[minmax(0,1.25fr)_minmax(22.8125rem,0.75fr)]">
+        <Card className="p-3.5 sm:min-h-82.5 sm:p-4.5 lg:min-h-86.5">
+          <SectionHeader
+            title="Spending trend"
+            subtitle="Track how your expenses change over time."
+            action={
+              <Select
+                value={period}
+                onChange={changePeriod}
+                label="Select chart period"
+                className="max-xs:hidden"
+              >
+                {periods
+                  .filter((item) => item !== "Custom range")
+                  .map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
+              </Select>
+            }
+          />
+          <div className="mt-2 flex min-h-11.75 items-center gap-2.25">
+            <div className="flex flex-col gap-0.5">
+              <strong className="text-3xl tracking-tight">₹67,240</strong>
+              <span className="text-3xs text-subtle-foreground">This period</span>
             </div>
-            <Select value={period} onChange={changePeriod} label="Select chart period">
-              {periods
-                .filter((item) => item !== "Custom range")
-                .map((item) => (
-                  <option key={item}>{item}</option>
-                ))}
-            </Select>
-          </div>
-          <div className="trend-metric">
-            <div>
-              <strong>₹67,240</strong>
-              <span>This period</span>
-            </div>
-            <span className="trend-change">
+            <Badge tone="emerald">
               <TrendingDown size="0.8125rem" />
               8.2%
-            </span>
-            <div className="chart-legend">
-              <span>
-                <i className="current" />
+            </Badge>
+            <div className="ml-auto flex items-center gap-3 text-3xs text-subtle-foreground max-sm:hidden">
+              <span className="flex items-center gap-1.25">
+                <i aria-hidden className="w-3.25 border-t-2 border-primary-accent" />
                 Current
               </span>
-              <span>
-                <i />
+              <span className="flex items-center gap-1.25">
+                <i aria-hidden className="w-3.25 border-t-2 border-dashed border-border-strong" />
                 Previous
               </span>
             </div>
           </div>
           <TrendChart />
-        </section>
-        <section className="card expense-category-card">
-          <div className="expense-card-header">
-            <div>
-              <strong>Spending by category</strong>
-              <span>Where your money went this month.</span>
-            </div>
-          </div>
-          <div className="expense-donut-content">
-            <div className="expense-donut">
-              <div>
-                <strong>₹67,240</strong>
-                <span>Total spent</span>
-              </div>
-            </div>
-            <div className="expense-category-list">
-              {categoryBreakdown.map((item) => (
-                <div key={item.name}>
-                  <i className={`expense-legend legend-${item.color}`} />
-                  <span>{item.name}</span>
-                  <strong>{formatCurrency(item.amount)}</strong>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        </Card>
+        <Card className="p-3.5 sm:min-h-82.5 sm:p-4.5 lg:min-h-86.5">
+          <SectionHeader title="Spending by category" subtitle="Where your money went this month." />
+          <CategoryDonut />
+        </Card>
       </div>
 
-      <section className="card transaction-manager">
-        <div className="transaction-heading">
-          <div>
-            <strong>Transactions</strong>
-            <span>View and manage your income and expenses.</span>
-          </div>
-        </div>
-        <div className="transaction-toolbar">
-          <label className="document-search transaction-search">
-            <Search size="1rem" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search transactions..."
-            />
-          </label>
-          <div className="transaction-filters">
-            <button type="button" className="doc-select">
+      <Card>
+        <CardHeader
+          title="Transactions"
+          subtitle="View and manage your income and expenses."
+        />
+        <div className="flex flex-col gap-3 px-3 pb-3 sm:px-4 lg:flex-row lg:items-center lg:justify-between">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search transactions..."
+            className="lg:w-67.5 lg:shrink-0"
+          />
+          <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap lg:justify-end">
+            <button
+              type="button"
+              className="inline-flex h-8.5 min-w-29 items-center justify-between gap-1.5 rounded-sm border border-border bg-card px-2.5 text-2xs font-semibold text-muted-foreground transition hover:border-border-strong hover:text-foreground"
+            >
               <CalendarDays size="0.875rem" />
               Date range
               <ChevronDown size="0.875rem" />
@@ -286,101 +272,113 @@ export function ExpensesPage() {
         </div>
 
         {loading ? (
-          <div className="transaction-loading" aria-label="Loading transactions">
+          <div
+            role="status"
+            aria-label="Loading transactions"
+            className="grid min-h-71.5 content-start border-t border-border"
+          >
             {[1, 2, 3, 4].map((item) => (
-              <div key={item}>
-                <i />
-                <span>
-                  <b />
-                  <small />
+              <div
+                key={item}
+                className="grid h-15.5 grid-cols-[1.9375rem_1fr_3.75rem] items-center gap-3 border-b border-border px-3 sm:grid-cols-[1.9375rem_minmax(9.375rem,1.4fr)_1fr_1fr_1fr] sm:px-4"
+              >
+                <i className="size-7.75 animate-pulse rounded-xs bg-secondary" />
+                <span className="grid gap-1.5">
+                  <b className="h-2 w-30 animate-pulse rounded-xs bg-secondary" />
+                  <small className="h-1.5 w-20.5 animate-pulse rounded-xs bg-secondary" />
                 </span>
-                <em />
-                <em />
-                <em />
+                <em className="h-2 w-[70%] animate-pulse rounded-xs bg-secondary" />
+                <em className="h-2 w-[70%] animate-pulse rounded-xs bg-secondary max-sm:hidden" />
+                <em className="h-2 w-[70%] animate-pulse rounded-xs bg-secondary max-sm:hidden" />
               </div>
             ))}
           </div>
         ) : visible.length === 0 ? (
           transactions.length === 0 ? (
-            <div className="transaction-empty">
-              <span>
-                <ReceiptText size="1.375rem" />
-              </span>
-              <strong>No transactions yet</strong>
-              <p>Add your first transaction to start tracking your cash flow.</p>
-              <Button onClick={() => setModalOpen(true)}>
-                <Plus size="0.9375rem" />
-                Add transaction
-              </Button>
-            </div>
+            <EmptyState
+              icon={ReceiptText}
+              title="No transactions yet"
+              description="Add your first transaction to start tracking your cash flow."
+              action={
+                <Button onClick={() => setModalOpen(true)}>
+                  <Plus size="0.9375rem" />
+                  Add transaction
+                </Button>
+              }
+            />
           ) : (
-            <div className="transaction-empty">
-              <span>
-                <Search size="1.375rem" />
-              </span>
-              <strong>No matching transactions</strong>
-              <p>Try changing your search or filters to find what you&rsquo;re looking for.</p>
-              <Button variant="secondary" onClick={resetFilters}>
-                Clear filters
-              </Button>
-            </div>
+            <EmptyState
+              icon={Search}
+              title="No matching transactions"
+              description="Try changing your search or filters to find what you’re looking for."
+              action={
+                <Button variant="secondary" onClick={resetFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
           )
         ) : (
-          <div className="data-table-wrap">
-            <table className="data-table interactive transactions-table">
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>Category</th>
-                  <th>Date</th>
-                  <th>Payment method</th>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((transaction) => (
-                  <tr key={transaction.id} onClick={() => setSelected(transaction)}>
-                    <td>
-                      <span className="cell-main">
-                        <span
-                          className={`cell-icon ${transaction.type === "Income" ? "positive" : ""}`.trim()}
-                        >
-                          {transaction.type === "Income" ? (
-                            <ArrowUpRight size="1rem" />
-                          ) : (
-                            <ArrowDownRight size="1rem" />
-                          )}
-                        </span>
-                        <span className="cell-text">
-                          <strong>{transaction.description}</strong>
-                          <small>{transaction.merchant}</small>
-                        </span>
-                      </span>
-                    </td>
-                    <td data-label="Category">
-                      <span className="badge badge-slate">{transaction.category}</span>
-                    </td>
-                    <td data-label="Date">{transaction.date}</td>
-                    <td data-label="Payment" className="hide-mobile">
+          <DataTable className="sm:min-w-247.5">
+            <THead>
+              <TH>Description</TH>
+              <TH>Category</TH>
+              <TH>Date</TH>
+              <TH>Payment method</TH>
+              <TH>Type</TH>
+              <TH align="right">Amount</TH>
+              <TH>
+                <span className="sr-only">Actions</span>
+              </TH>
+            </THead>
+            <TBody>
+              {visible.map((transaction) => {
+                const isIncome = transaction.type === "Income";
+                return (
+                  <TR key={transaction.id} interactive onClick={() => setSelected(transaction)}>
+                    <TD primary>
+                      <CellMain
+                        icon={
+                          <IconTile
+                            tone={isIncome ? "emerald" : "indigo"}
+                            className="size-7.75 rounded-sm"
+                          >
+                            {isIncome ? (
+                              <ArrowUpRight size="1rem" />
+                            ) : (
+                              <ArrowDownRight size="1rem" />
+                            )}
+                          </IconTile>
+                        }
+                        title={transaction.description}
+                        subtitle={transaction.merchant}
+                      />
+                    </TD>
+                    <TD label="Category">
+                      <Badge tone="slate">{transaction.category}</Badge>
+                    </TD>
+                    <TD label="Date">{transaction.date}</TD>
+                    <TD label="Payment" hideOnMobile>
                       {transaction.payment}
-                    </td>
-                    <td data-label="Type">
-                      <span className={`type-badge ${transaction.type.toLowerCase()}`}>
-                        {transaction.type}
-                      </span>
-                    </td>
-                    <td
-                      data-label="Amount"
-                      className={transaction.type === "Income" ? "positive-amount" : ""}
+                    </TD>
+                    <TD label="Type">
+                      <StatusBadge
+                        status={transaction.type}
+                        tone={isIncome ? "emerald" : "slate"}
+                        dot={false}
+                      />
+                    </TD>
+                    <TD
+                      label="Amount"
+                      align="right"
+                      className={cn(
+                        "font-bold tabular-nums max-sm:text-right",
+                        isIncome ? "text-success" : "text-foreground",
+                      )}
                     >
-                      {transaction.type === "Income" ? "+" : "−"}{" "}
-                      {formatCurrency(transaction.amount)}
-                    </td>
-                    <td className="action-cell">
+                      {isIncome ? "+" : "−"} {formatCurrency(transaction.amount)}
+                    </TD>
+                    <TD actions>
                       <ActionMenu
                         label={`Actions for ${transaction.description}`}
                         items={[
@@ -407,26 +405,15 @@ export function ExpensesPage() {
                           },
                         ]}
                       />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </TD>
+                  </TR>
+                );
+              })}
+            </TBody>
+          </DataTable>
         )}
-        <div className="table-footer">
-          <span>
-            Showing {visible.length} of {transactions.length} transactions
-          </span>
-          <div>
-            <button type="button" disabled>
-              Previous
-            </button>
-            <span>1</span>
-            <button type="button">Next</button>
-          </div>
-        </div>
-      </section>
+        <TableFooter shown={visible.length} total={transactions.length} noun="transactions" />
+      </Card>
 
       {modalOpen && (
         <AddTransactionModal onClose={() => setModalOpen(false)} onSave={saveTransaction} />
@@ -450,6 +437,6 @@ export function ExpensesPage() {
           onConfirm={confirmDelete}
         />
       )}
-    </div>
+    </PageStack>
   );
 }
